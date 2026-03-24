@@ -437,7 +437,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/p
 async function renderPdfToContainer(container, pdfData){
   container.innerHTML='<div style="text-align:center;padding:20px;color:var(--t4)"><span class="dots"><span></span><span></span><span></span></span> Loading PDF...</div>';
   try{
-    const pdf=await pdfjsLib.getDocument({data:pdfData}).promise;
+    // CRITICAL: copy the ArrayBuffer so the original doesn't get detached
+    const dataCopy = pdfData.slice(0);
+    const pdf=await pdfjsLib.getDocument({data:dataCopy}).promise;
     container.innerHTML='';
     const scale=1.5;
     for(let i=1;i<=pdf.numPages;i++){
