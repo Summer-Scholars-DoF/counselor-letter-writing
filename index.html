@@ -3,240 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RecOS — Recommendation Letter Writing System</title>
+<title>RecOS — Document Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-:root {
-  --fd: 'Source Serif 4', serif;
-  --fb: 'Outfit', sans-serif;
-  --s0: #f5f4f0; --s1: #ffffff;
-  --b1: #ddd9d1; --b2: #c8c3bb;
-  --t1: #1c1917; --t2: #3d3830; --t3: #6d6860; --t4: #9e9a92;
-  --a1: #b45936; --a1bg: rgba(180,89,54,0.07);
+:root{
+  --fd:'Source Serif 4',serif;
+  --fb:'Outfit',sans-serif;
+  --bg:#f3f2ee;--s1:#ffffff;
+  --b1:#ddd9d1;--b2:#c8c3bb;
+  --t1:#1c1917;--t2:#3d3830;--t3:#6d6860;--t4:#9e9a92;
+  --a1:#b45936;--a1bg:rgba(180,89,54,0.07);
+  --red:#dc2626;--redbg:rgba(220,38,38,0.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:var(--fb);background:var(--s0);color:var(--t1)}
-::-webkit-scrollbar{width:5px}
+body{font-family:var(--fb);background:var(--bg);color:var(--t1)}
+::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--b1);border-radius:3px}
-button,textarea,input,select{font-family:var(--fb)}
+button,input,select{font-family:var(--fb)}
 
-#app{display:flex;height:100vh}
-#left-panel{flex:1;display:flex;flex-direction:column;border-right:1px solid var(--b1);min-width:0}
-#right-panel{width:400px;flex-shrink:0;display:flex;flex-direction:column}
-.ph{padding:12px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-#doc-list{flex:1;overflow-y:auto;padding:12px}
+/* Layout */
+#app{display:flex;flex-direction:column;height:100vh}
 
-.btn-p{padding:8px 16px;border-radius:7px;border:none;background:var(--a1);color:#fff;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
-.btn-p:disabled{opacity:0.4;cursor:default}
-.btn-s{padding:7px 14px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t3);cursor:pointer;font-size:12px;font-weight:500}
-.btn-g{background:none;border:none;cursor:pointer;color:var(--t4);padding:3px;display:inline-flex;align-items:center}
-.inp{width:100%;padding:9px 12px;border-radius:7px;border:1px solid var(--b1);background:var(--s0);color:var(--t1);font-size:13.5px;outline:none}
-.lbl{display:block;margin-bottom:5px;font-size:12px;color:var(--t3);font-weight:600;letter-spacing:0.02em}
+/* Top bar */
+.topbar{padding:10px 20px;border-bottom:1px solid var(--b1);background:var(--s1);display:flex;align-items:center;gap:16px;flex-shrink:0}
+.logo{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.03em;flex-shrink:0}
+.logo span{color:var(--a1);font-weight:700}
 
-.tb{padding:10px 10px 6px;border-bottom:1px solid var(--b1);display:flex;gap:5px}
-.tbn{padding:7px 12px;border-radius:7px;border:1px solid var(--b1);background:var(--s0);color:var(--t3);cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px;transition:all .12s}
-.tbn.on{background:var(--a1bg);border-color:var(--a1);color:var(--a1)}
-.tc{flex:1;overflow:hidden;display:flex;flex-direction:column}
+/* Student tabs */
+.stu-tabs{display:flex;gap:4px;flex:1;overflow-x:auto;padding:2px 0;min-width:0}
+.stu-tabs::-webkit-scrollbar{height:3px}
+.stu-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--b1);background:var(--bg);color:var(--t3);cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;transition:all .12s;flex-shrink:0}
+.stu-tab:hover{border-color:var(--b2);color:var(--t2)}
+.stu-tab.on{background:var(--a1);border-color:var(--a1);color:#fff}
+.stu-tab .x{margin-left:6px;opacity:.5;font-size:11px}
+.stu-tab.on .x{opacity:.7}
+.add-stu{padding:6px 12px;border-radius:6px;border:1px dashed var(--b1);background:transparent;color:var(--t4);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0;transition:all .12s}
+.add-stu:hover{border-color:var(--a1);color:var(--a1)}
 
-.dc{border:1px solid var(--b1);border-radius:8px;margin-bottom:6px;background:var(--s1);overflow:hidden;transition:border-color .2s}
+/* Main area */
+.main{flex:1;overflow-y:auto;padding:16px 20px}
+
+/* Upload bar */
+.upload-bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.upload-zone{flex:1;min-width:250px;border:2px dashed var(--b1);border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:12px;background:var(--s1);transition:border-color .2s;cursor:pointer;position:relative}
+.upload-zone:hover{border-color:var(--a1)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon{font-size:20px;opacity:.4}
+.upload-text{font-size:13px;color:var(--t3)}
+.upload-text strong{color:var(--t2)}
+.btn-expand{padding:7px 14px;border-radius:6px;border:1px solid var(--b1);background:var(--s1);color:var(--t3);cursor:pointer;font-size:12px;font-weight:500}
+
+/* Doc grid */
+.doc-grid{display:flex;flex-direction:column;gap:6px}
+
+/* Doc card */
+.dc{border:1px solid var(--b1);border-radius:8px;background:var(--s1);overflow:hidden;transition:border-color .15s}
 .dc.open{border-color:var(--b2)}
-.dc-h{width:100%;display:flex;align-items:center;gap:10px;padding:11px 14px;background:none;border:none;cursor:pointer;text-align:left}
+.dc-h{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:none;border:none;cursor:pointer;text-align:left}
+.dc-chev{color:var(--t4);flex-shrink:0;font-size:12px;transition:transform .15s}
 .dc-badge{padding:2px 9px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
-.dc-title{font-size:13.5px;font-weight:600;color:var(--t1);font-family:var(--fd);flex:1}
+.dc-title{font-size:13.5px;font-weight:600;color:var(--t1);font-family:var(--fd);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-meta{font-size:11px;color:var(--t4);flex-shrink:0}
+.dc-del{padding:4px 8px;border-radius:5px;border:none;background:transparent;color:var(--t4);cursor:pointer;font-size:11px;font-weight:600;opacity:0;transition:all .15s;flex-shrink:0}
+.dc-h:hover .dc-del{opacity:1}
+.dc-del:hover{background:var(--redbg);color:var(--red)}
 .dc-body{border-top:1px solid var(--b1)}
-.pdf-frame{width:100%;height:550px;border:none;background:#e8e6e1}
-.pdf-pages{max-height:600px;overflow-y:auto;background:#e8e6e1;padding:8px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.pdf-pages canvas{display:block;max-width:100%;box-shadow:0 1px 4px rgba(0,0,0,0.12);background:#fff}
-.text-content{padding:14px 18px;font-size:13.5px;line-height:1.8;color:var(--t1);white-space:pre-wrap;max-height:480px;overflow-y:auto}
+.pdf-pages{max-height:650px;overflow-y:auto;background:#e8e6e1;padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.pdf-pages canvas{display:block;max-width:100%;box-shadow:0 1px 4px rgba(0,0,0,.1);background:#fff}
+.text-content{padding:14px 18px;font-size:13.5px;line-height:1.8;color:var(--t1);white-space:pre-wrap;max-height:500px;overflow-y:auto}
 
-.modal-ov{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
-.modal-bx{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:28px;width:560px;max-width:92vw;max-height:90vh;overflow-y:auto}
+/* Empty state */
+.empty{padding:60px 20px;text-align:center}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.15}
+.empty-title{font-size:15px;font-weight:600;color:var(--t3);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--t4);line-height:1.6;max-width:400px;margin:0 auto}
 
-.nar-body{flex:1;overflow-y:auto;padding:6px 10px}
-.tg-btn{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;border-radius:7px;cursor:pointer;border:none;text-align:left}
-.hl-card{display:flex;gap:7px;padding:7px 9px;margin-bottom:3px;border-radius:5px;background:var(--s1);font-size:12.5px;line-height:1.6}
-.empty-st{padding:40px 20px;text-align:center;color:var(--t4)}
+/* Modal */
+.modal-ov{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.modal-bx{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:24px;width:420px;max-width:90vw}
+.modal-bx h3{font-family:var(--fd);font-size:17px;color:var(--t1);margin:0 0 16px}
+.modal-bx input{width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--b1);background:var(--bg);color:var(--t1);font-size:14px;outline:none}
+.modal-bx .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-p{padding:8px 16px;border-radius:7px;border:none;background:var(--a1);color:#fff;cursor:pointer;font-size:13px;font-weight:600}
+.btn-p:disabled{opacity:.4;cursor:default}
+.btn-s{padding:8px 16px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t3);cursor:pointer;font-size:13px}
+.btn-g{background:none;border:none;cursor:pointer;color:var(--t4);padding:3px}
 
-.ai-msgs{flex:1;overflow-y:auto;padding:10px}
-.ai-b{max-width:92%;padding:9px 13px;font-size:13px;line-height:1.7;white-space:pre-wrap}
-.ai-b.u{border-radius:11px 11px 2px 11px;background:var(--a1);color:#fff;margin-left:auto}
-.ai-b.a{border-radius:11px 11px 11px 2px;background:var(--s0);color:var(--t1);border:1px solid var(--b1)}
-.ai-bar{padding:10px;border-top:1px solid var(--b1);display:flex;gap:7px}
-.qp{display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:7px;border:1px solid var(--b1);background:var(--s0);cursor:pointer;text-align:left;font-size:12.5px;color:var(--t2);transition:all .12s;width:100%}
-.qp:hover{border-color:var(--a1);background:var(--a1bg)}
+/* Confirm dialog */
+.confirm-msg{font-size:13.5px;color:var(--t2);line-height:1.6;margin-bottom:16px}
 
-.hl-add{padding:10px 12px;border-top:1px solid var(--b1);background:var(--s0);flex-shrink:0}
-.hl-add-row{display:flex;gap:6px;margin-top:6px}
-.hl-ta{flex:1;padding:8px 10px;border-radius:7px;border:1px solid var(--b1);background:var(--s1);color:var(--t1);font-size:12.5px;outline:none;resize:none;min-height:36px;max-height:100px;line-height:1.5}
-.tp{padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;border:1px solid var(--b1);background:transparent}
-.tp.on{border-width:2px}
-
-#letter-ta{flex:1;padding:16px 18px;border:none;outline:none;resize:none;background:transparent;color:var(--t1);font-size:14.5px;line-height:1.9;width:100%}
-
-.toast{position:fixed;top:20px;right:20px;z-index:9999;background:var(--t1);color:var(--s0);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;display:none;align-items:center;gap:6px}
+/* Loading dots */
 .dots{display:inline-flex;gap:3px;align-items:center}
 .dots span{width:5px;height:5px;border-radius:50%;background:var(--a1);opacity:.3;animation:bk 1.2s infinite}
 .dots span:nth-child(2){animation-delay:.2s}
 .dots span:nth-child(3){animation-delay:.4s}
 @keyframes bk{0%,100%{opacity:.15}50%{opacity:.7}}
-.hid{display:none!important}
 
-.reup-banner{padding:12px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;margin-bottom:4px;font-size:12px;color:#9a3412;display:flex;align-items:center;gap:8px}
-.reup-banner input{font-size:12px}
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--t1);color:var(--bg);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;display:none;white-space:nowrap}
+
+.hid{display:none!important}
 </style>
 </head>
 <body>
 
-<!-- SETUP -->
-<div id="setup" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px">
-  <div style="max-width:500px;width:100%">
-    <div style="margin-bottom:32px">
-      <h1 style="font-family:var(--fd);font-size:28px;font-weight:800;color:var(--t1);margin:0 0 6px;letter-spacing:-.03em">RecOS</h1>
-      <p style="font-size:14px;color:var(--t3);margin:0;line-height:1.5">Recommendation Letter Writing System</p>
-    </div>
-    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:24px">
-      <label class="lbl">Student Name</label>
-      <input id="name-in" class="inp" placeholder="LastName, FirstName" autofocus>
-      <p style="font-size:12.5px;color:var(--t4);line-height:1.6;margin:16px 0 20px">
-        Upload PDFs and they'll display in their original format. Read the document on the left, type key excerpts into the Narrative Builder on the right. No messy text extraction.
-      </p>
-      <button id="start-btn" class="btn-p" style="width:100%;padding:12px 20px;font-size:15px;justify-content:center" disabled>Start Working →</button>
-    </div>
-    <p style="font-size:11.5px;color:var(--t4);margin-top:16px;text-align:center">Open this file in Chrome · Class of 2027</p>
-  </div>
-</div>
-
-<!-- MAIN -->
-<div id="app" class="hid">
-  <div id="left-panel">
-    <div class="ph">
-      <div>
-        <span style="font-family:var(--fd);font-size:11px;font-weight:700;color:var(--a1);letter-spacing:.06em;text-transform:uppercase">RecOS</span>
-        <h2 id="stu-name" style="font-family:var(--fd);font-size:19px;font-weight:700;color:var(--t1);margin:0;letter-spacing:-.02em"></h2>
-      </div>
-      <div style="display:flex;gap:7px;align-items:center">
-        <button id="tog-btn" class="btn-s hid">Expand All</button>
-        <button class="btn-p" onclick="showModal()">📄 Add Document</button>
-      </div>
-    </div>
-    <div id="doc-list">
-      <div id="empty-st" class="empty-st">
-        <div style="font-size:40px;margin-bottom:16px;opacity:.15">📁</div>
-        <div style="font-size:15px;font-weight:600;color:var(--t3);margin-bottom:6px">No documents loaded yet</div>
-        <div style="font-size:13px;color:var(--t4);line-height:1.6;max-width:380px;margin:0 auto 20px">Upload PDFs or paste text. PDFs display in their original format.</div>
-        <button class="btn-p" onclick="showModal()">📄 Add First Document</button>
-      </div>
-    </div>
+<div id="app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo">Rec<span>OS</span></div>
+    <div class="stu-tabs" id="stu-tabs"></div>
+    <button class="add-stu" id="add-stu-btn" title="Add student">+</button>
   </div>
 
-  <div id="right-panel">
-    <div class="tb">
-      <button class="tbn on" data-tab="nar" onclick="swTab('nar')">✏️ Narrative <span id="hl-badge" class="hid" style="font-size:10px;font-weight:700;background:var(--a1);color:#fff;border-radius:8px;padding:0 6px"></span></button>
-      <button class="tbn" data-tab="ai" onclick="swTab('ai')">✦ Claude</button>
-      <button class="tbn" data-tab="let" onclick="swTab('let')">📝 Letter</button>
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <div id="no-student" class="empty">
+      <div class="empty-icon">👤</div>
+      <div class="empty-title">No students yet</div>
+      <div class="empty-sub">Click the + button above to add your first student.</div>
     </div>
 
-    <!-- NARRATIVE -->
-    <div id="p-nar" class="tc">
-      <div style="padding:13px 14px 10px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between">
-        <h3 style="margin:0;font-size:14px;font-family:var(--fd);color:var(--t1);font-weight:700">Narrative Builder</h3>
-        <div style="display:flex;align-items:center;gap:8px">
-          <button id="copy-btn" class="btn-g hid" onclick="copyHL()" style="font-size:11px;gap:4px">📋 Copy All</button>
-          <span id="hl-ct" style="font-size:11px;color:var(--t4)">0 excerpts</span>
+    <div id="student-view" class="hid">
+      <!-- Upload bar -->
+      <div class="upload-bar">
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">📄</div>
+          <div class="upload-text"><strong>Drop PDFs here</strong> or click to upload — multiple files supported</div>
+          <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple>
         </div>
+        <button class="btn-expand" id="toggle-all">Expand All</button>
       </div>
-      <div id="nar-body" class="nar-body">
-        <div class="empty-st">
-          <div style="font-size:28px;margin-bottom:10px;opacity:.25">✏️</div>
-          <div style="font-size:13px;font-weight:600;color:var(--t3);margin-bottom:4px">No highlights yet</div>
-          <div style="font-size:12.5px;line-height:1.6">Read documents on the left. Type key quotes, observations, and details into the box below — tagged by narrative theme.</div>
-        </div>
-      </div>
-      <div class="hl-add">
-        <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
-          <span style="font-size:11px;font-weight:600;color:var(--t4);margin-right:2px">Theme:</span>
-          <span id="theme-pills"></span>
-        </div>
-        <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:var(--t4);white-space:nowrap">From:</span>
-          <select id="hl-src" style="font-size:11.5px;border:1px solid var(--b1);border-radius:5px;padding:3px 8px;background:var(--s1);color:var(--t2);outline:none;flex:1;min-width:0">
-            <option value="">(select document)</option>
-          </select>
-        </div>
-        <div class="hl-add-row">
-          <textarea id="hl-in" class="hl-ta" placeholder="Type a key quote, detail, or observation..." rows="1"></textarea>
-          <button id="hl-go" class="btn-p" style="padding:8px 12px;align-self:flex-end" onclick="addHL()" disabled>Add</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- AI -->
-    <div id="p-ai" class="tc hid">
-      <div style="padding:13px 14px 10px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:7px">
-        <span style="color:var(--a1)">✦</span>
-        <h3 style="margin:0;font-size:14px;font-family:var(--fd);color:var(--t1);font-weight:700">Claude Assistant</h3>
-      </div>
-      <div id="ai-msgs" class="ai-msgs">
-        <div style="padding:12px">
-          <p style="font-size:12.5px;color:var(--t3);line-height:1.6;margin-bottom:14px">I can see your highlights and text documents. Ask me anything:</p>
-          <div style="display:flex;flex-direction:column;gap:5px">
-            <button class="qp" onclick="aiSend('Based on my highlights, draft a compelling opening paragraph for this recommendation letter.')"><span style="color:var(--a1);flex-shrink:0">✦</span> Draft opening paragraph</button>
-            <button class="qp" onclick="aiSend('Looking at my highlights, what is the strongest narrative arc? How should I sequence the letter?')"><span style="color:var(--a1);flex-shrink:0">✦</span> Find the narrative arc</button>
-            <button class="qp" onclick="aiSend('Based on the themes in my highlights, what important angles or details might I be overlooking?')"><span style="color:var(--a1);flex-shrink:0">✦</span> What am I missing?</button>
-            <button class="qp" onclick="aiSend('Draft a strong closing paragraph based on the themes I have highlighted.')"><span style="color:var(--a1);flex-shrink:0">✦</span> Suggest a closing</button>
-          </div>
-        </div>
-      </div>
-      <div class="ai-bar">
-        <input id="ai-in" class="inp" style="flex:1;margin:0" placeholder="Ask about this student..." onkeydown="if(event.key==='Enter')aiSend()">
-        <button class="btn-p" style="padding:8px 14px" onclick="aiSend()">➤</button>
-      </div>
-    </div>
+      <!-- Documents -->
+      <div class="doc-grid" id="doc-grid"></div>
 
-    <!-- LETTER -->
-    <div id="p-let" class="tc hid">
-      <div style="padding:13px 14px 10px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between">
-        <h3 style="margin:0;font-size:14px;font-family:var(--fd);color:var(--t1);font-weight:700">Letter Draft</h3>
-        <span id="wc" style="font-size:11px;color:var(--t4)">0 words</span>
+      <div id="no-docs" class="empty" style="padding:40px 20px">
+        <div class="empty-icon">📁</div>
+        <div class="empty-title">No documents yet</div>
+        <div class="empty-sub">Upload PDFs from this student's Drive folder. The system will auto-title them based on content.</div>
       </div>
-      <textarea id="letter-ta" placeholder="Start writing the recommendation letter here..."></textarea>
     </div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div id="modal" class="modal-ov hid">
+<!-- Add Student Modal -->
+<div id="add-modal" class="modal-ov hid">
   <div class="modal-bx">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <h3 style="margin:0;font-family:var(--fd);font-size:18px;color:var(--t1)">Add Document</h3>
-      <button class="btn-g" onclick="hideModal()" style="font-size:16px">✕</button>
+    <h3>Add Student</h3>
+    <input id="add-name" placeholder="LastName, FirstName">
+    <div class="actions">
+      <button class="btn-s" onclick="hideAddModal()">Cancel</button>
+      <button class="btn-p" id="add-go" onclick="addStudent()" disabled>Add</button>
     </div>
-    <label class="lbl">Document Title</label>
-    <input id="m-title" class="inp" placeholder="e.g., Transcript — Fall 2025" style="margin-bottom:14px">
-    <label class="lbl">Document Type</label>
-    <div id="m-types" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
-    <label class="lbl">Content</label>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button class="tbn on" id="mm-pdf" onclick="setMM('pdf')">Upload PDF</button>
-      <button class="tbn" id="mm-txt" onclick="setMM('text')">Paste Text</button>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div id="del-modal" class="modal-ov hid">
+  <div class="modal-bx">
+    <h3>Remove Document</h3>
+    <div class="confirm-msg" id="del-msg"></div>
+    <div class="actions">
+      <button class="btn-s" onclick="hideDelModal()">Cancel</button>
+      <button class="btn-p" style="background:var(--red)" onclick="confirmDel()">Remove</button>
     </div>
-    <div id="m-pdf">
-      <div style="border:2px dashed var(--b1);border-radius:10px;padding:28px;text-align:center;background:var(--s0)">
-        <div style="margin-bottom:8px;color:var(--t3);font-size:20px">📄</div>
-        <input id="m-file" type="file" accept=".pdf" style="font-size:13px;color:var(--t2)">
-        <div style="font-size:12px;color:var(--t4);margin-top:10px;line-height:1.5">The PDF displays in its original format. No text extraction.</div>
-      </div>
-      <div id="m-fprev" class="hid" style="margin-top:10px;font-size:12px;color:var(--t3);font-weight:600">✓ <span id="m-fname"></span></div>
-    </div>
-    <div id="m-txt" class="hid">
-      <textarea id="m-paste" class="inp" style="height:220px;resize:vertical;line-height:1.7" placeholder="Paste text from Veracross, Scoir, Google Docs, Claude Projects, etc."></textarea>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
-      <button class="btn-s" onclick="hideModal()">Cancel</button>
-      <button id="m-go" class="btn-p" onclick="submitDoc()" disabled>Add Document</button>
+  </div>
+</div>
+
+<!-- Delete Student Confirm -->
+<div id="del-stu-modal" class="modal-ov hid">
+  <div class="modal-bx">
+    <h3>Remove Student</h3>
+    <div class="confirm-msg" id="del-stu-msg"></div>
+    <div class="actions">
+      <button class="btn-s" onclick="hideDelStuModal()">Cancel</button>
+      <button class="btn-p" style="background:var(--red)" onclick="confirmDelStu()">Remove</button>
     </div>
   </div>
 </div>
@@ -244,404 +188,475 @@ button,textarea,input,select{font-family:var(--fb)}
 <div id="toast" class="toast"></div>
 
 <script>
-let stuName='', docs=[], hls=[], draft='', openDocs={}, curTab='nar', selTheme='character';
-let mm='pdf', mFile=null, selType='transcript', aiMsgs=[], aiLoad=false;
-
-const DT={
-  transcript:{l:'Transcript',c:'#5193c7'},
-  academic_comments:{l:'Academic Comments',c:'#cf7352'},
-  parent_survey:{l:'Parent Questionnaire',c:'#d4a843'},
-  scoir_survey:{l:'Scoir Survey',c:'#5faa63'},
-  june_letter:{l:'June Letter',c:'#9b7dbf'},
-  counselor_notes:{l:'Counselor Notes',c:'#d47da0'},
-  teacher_rec:{l:'Teacher Rec',c:'#cf7352'},
-  other:{l:'Document',c:'#8a8a9a'},
-};
-const TH=[
-  {id:'character',l:'Character',c:'#d4a843',bg:'rgba(212,168,67,0.12)'},
-  {id:'academic',l:'Academic',c:'#5193c7',bg:'rgba(81,147,199,0.12)'},
-  {id:'leadership',l:'Leadership',c:'#cf7352',bg:'rgba(207,115,82,0.12)'},
-  {id:'growth',l:'Growth',c:'#5faa63',bg:'rgba(95,170,99,0.12)'},
-  {id:'community',l:'Community',c:'#9b7dbf',bg:'rgba(155,125,191,0.12)'},
-  {id:'anecdote',l:'Anecdote',c:'#d47da0',bg:'rgba(212,125,160,0.12)'},
-];
-const TM=Object.fromEntries(TH.map(t=>[t.id,t]));
-
-// Setup
-const ni=document.getElementById('name-in'), sb=document.getElementById('start-btn');
-ni.addEventListener('input',()=>sb.disabled=!ni.value.trim());
-ni.addEventListener('keydown',e=>{if(e.key==='Enter'&&ni.value.trim())go()});
-sb.addEventListener('click',go);
-function go(){
-  stuName=ni.value.trim();
-  document.getElementById('setup').classList.add('hid');
-  document.getElementById('app').classList.remove('hid');
-  document.getElementById('stu-name').textContent=stuName;
-  rTP(); rSD();
-}
-
-// Theme pills
-function rTP(){
-  const c=document.getElementById('theme-pills'); c.innerHTML='';
-  TH.forEach(t=>{
-    const b=document.createElement('button'); b.className='tp'+(selTheme===t.id?' on':'');
-    b.textContent=t.l; b.style.color=t.c;
-    if(selTheme===t.id){b.style.borderColor=t.c;b.style.background=t.bg;b.style.borderWidth='2px'}
-    b.onclick=()=>{selTheme=t.id;rTP()};
-    c.appendChild(b);
-  });
-}
-
-// Source dropdown
-function rSD(){
-  const s=document.getElementById('hl-src'), v=s.value;
-  s.innerHTML='<option value="">(select document)</option>';
-  docs.forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=d.title;s.appendChild(o)});
-  if(v&&docs.find(d=>d.id===v))s.value=v;
-}
-
-// Highlight input
-const hlIn=document.getElementById('hl-in');
-hlIn.addEventListener('input',()=>{
-  document.getElementById('hl-go').disabled=!hlIn.value.trim();
-  hlIn.style.height='auto'; hlIn.style.height=Math.min(hlIn.scrollHeight,100)+'px';
-});
-hlIn.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();addHL()}});
-
-function addHL(){
-  const text=hlIn.value.trim(); if(!text)return;
-  const src=document.getElementById('hl-src');
-  const doc=docs.find(d=>d.id===src.value);
-  hls.push({id:'h_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),text,docId:doc?.id||'',docTitle:doc?.title||'(unattributed)',themeId:selTheme,ts:Date.now()});
-  hlIn.value=''; hlIn.style.height='auto'; document.getElementById('hl-go').disabled=true;
-  rNar(); save();
-}
-function rmHL(id){hls=hls.filter(h=>h.id!==id);rNar();save()}
-
-// Render narrative
-function rNar(){
-  const body=document.getElementById('nar-body');
-  const badge=document.getElementById('hl-badge');
-  const ct=document.getElementById('hl-ct');
-  const cpb=document.getElementById('copy-btn');
-  ct.textContent=hls.length+' excerpt'+(hls.length!==1?'s':'');
-  if(hls.length>0){badge.textContent=hls.length;badge.classList.remove('hid');cpb.classList.remove('hid')}
-  else{badge.classList.add('hid');cpb.classList.add('hid')}
-  if(hls.length===0){
-    body.innerHTML='<div class="empty-st"><div style="font-size:28px;margin-bottom:10px;opacity:.25">✏️</div><div style="font-size:13px;font-weight:600;color:var(--t3);margin-bottom:4px">No highlights yet</div><div style="font-size:12.5px;line-height:1.6">Read documents on the left. Type key quotes and observations below.</div></div>';
-    return;
-  }
-  const gr={};TH.forEach(t=>{gr[t.id]=[]});hls.forEach(h=>{if(gr[h.themeId])gr[h.themeId].push(h)});
-  const ne=TH.filter(t=>gr[t.id].length>0), em=TH.filter(t=>gr[t.id].length===0);
-  let html='';
-  ne.forEach(t=>{
-    html+=`<div style="margin-bottom:8px"><button class="tg-btn" style="background:${t.bg};border:1px solid ${t.c}30;border-radius:7px" onclick="this.nextElementSibling.classList.toggle('hid');this.querySelector('.ch').textContent=this.nextElementSibling.classList.contains('hid')?'▸':'▾'"><span class="ch" style="color:${t.c}">▾</span><span style="font-size:12.5px;font-weight:700;color:${t.c}">${t.l}</span><span style="margin-left:auto;font-size:10px;font-weight:700;background:${t.c};color:#fff;border-radius:8px;padding:1px 7px">${gr[t.id].length}</span></button><div style="padding:4px 0 0 6px">`;
-    gr[t.id].forEach(h=>{
-      html+=`<div class="hl-card" style="border:1px solid ${t.c}15"><div style="flex:1;min-width:0"><div style="color:var(--t2)">"${esc(h.text)}"</div><div style="font-size:11px;color:var(--t4);margin-top:2px">— ${esc(h.docTitle)}</div></div><button class="btn-g" style="opacity:.3;flex-shrink:0" onclick="rmHL('${h.id}')">✕</button></div>`;
-    });
-    html+='</div></div>';
-  });
-  if(em.length>0){
-    html+=`<div style="padding:10px;border-top:1px solid var(--b1);margin-top:6px"><div style="font-size:10px;color:var(--t4);font-weight:700;letter-spacing:.06em;margin-bottom:6px">THEMES TO CONSIDER</div><div style="display:flex;flex-wrap:wrap;gap:5px">${em.map(t=>`<span style="padding:3px 9px;border-radius:10px;font-size:11px;border:1px dashed ${t.c}44;color:${t.c}77">${t.l}</span>`).join('')}</div></div>`;
-  }
-  body.innerHTML=html;
-}
-
-function copyHL(){
-  const gr={};TH.forEach(t=>{gr[t.id]=[]});hls.forEach(h=>{if(gr[h.themeId])gr[h.themeId].push(h)});
-  const txt=TH.filter(t=>gr[t.id].length>0).map(t=>'['+t.l+']\n'+gr[t.id].map(h=>'  • "'+h.text+'" ('+h.docTitle+')').join('\n')).join('\n\n');
-  navigator.clipboard.writeText(txt); toast('✓ Highlights copied');
-}
-
-// Tabs
-function swTab(t){
-  curTab=t;
-  document.querySelectorAll('.tbn').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
-  document.getElementById('p-nar').classList.toggle('hid',t!=='nar');
-  document.getElementById('p-ai').classList.toggle('hid',t!=='ai');
-  document.getElementById('p-let').classList.toggle('hid',t!=='let');
-}
-
-// Modal
-function showModal(){
-  document.getElementById('modal').classList.remove('hid');
-  document.getElementById('m-title').value='';
-  document.getElementById('m-paste').value='';
-  document.getElementById('m-file').value='';
-  document.getElementById('m-fprev').classList.add('hid');
-  mFile=null;selType='transcript';mm='pdf';setMM('pdf');rMT();updM();
-  setTimeout(()=>document.getElementById('m-title').focus(),50);
-}
-function hideModal(){document.getElementById('modal').classList.add('hid')}
-
-function rMT(){
-  const c=document.getElementById('m-types');c.innerHTML='';
-  Object.entries(DT).forEach(([k,v])=>{
-    const b=document.createElement('button');
-    b.style.cssText='padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .12s;';
-    b.textContent=v.l;
-    b.style.border=selType===k?'2px solid '+v.c:'1px solid var(--b1)';
-    b.style.background=selType===k?v.c+'15':'transparent';
-    b.style.color=selType===k?v.c:'var(--t3)';
-    b.onclick=()=>{selType=k;rMT()};
-    c.appendChild(b);
-  });
-}
-
-function setMM(m){
-  mm=m;
-  document.getElementById('m-pdf').classList.toggle('hid',m!=='pdf');
-  document.getElementById('m-txt').classList.toggle('hid',m!=='text');
-  document.getElementById('mm-pdf').classList.toggle('on',m==='pdf');
-  document.getElementById('mm-txt').classList.toggle('on',m==='text');
-  updM();
-}
-
-document.getElementById('m-file').addEventListener('change',e=>{
-  const f=e.target.files?.[0]; if(!f)return;
-  mFile=f;
-  const ti=document.getElementById('m-title');
-  if(!ti.value.trim())ti.value=f.name.replace(/\.[^.]+$/,'');
-  document.getElementById('m-fname').textContent=f.name;
-  document.getElementById('m-fprev').classList.remove('hid');
-  updM();
-});
-document.getElementById('m-paste').addEventListener('input',updM);
-document.getElementById('m-title').addEventListener('input',updM);
-
-function updM(){
-  const t=document.getElementById('m-title').value.trim();
-  let ok=false;
-  if(mm==='pdf')ok=!!mFile; else ok=!!document.getElementById('m-paste').value.trim();
-  document.getElementById('m-go').disabled=!t||!ok;
-}
-
-async function submitDoc(){
-  const title=document.getElementById('m-title').value.trim();
-  const id='doc_'+Date.now();
-  if(mm==='pdf'&&mFile){
-    const arrayBuf=await mFile.arrayBuffer();
-    docs.push({id,title,type:selType,mode:'pdf',pdfData:arrayBuf,fileName:mFile.name});
-  }else{
-    const content=document.getElementById('m-paste').value.trim();
-    if(!content)return;
-    docs.push({id,title,type:selType,mode:'text',content});
-  }
-  openDocs[id]=true; hideModal(); rDocs(); rSD(); save();
-}
-
-// Configure pdf.js
+// ── pdf.js config ──
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// Render a PDF ArrayBuffer into a container as canvas pages
-async function renderPdfToContainer(container, pdfData){
-  container.innerHTML='<div style="text-align:center;padding:20px;color:var(--t4)"><span class="dots"><span></span><span></span><span></span></span> Loading PDF...</div>';
-  try{
-    // CRITICAL: copy the ArrayBuffer so the original doesn't get detached
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+let students = []; // [{id, name, docs:[{id,title,type,mode,pdfData?,content?,fileName?}]}]
+let curStu = null; // student id
+let openDocs = {}; // docId -> bool
+let delTarget = null; // doc id pending delete
+let delStuTarget = null; // student id pending delete
+
+// ══════════════════════════════════════════════════════════════════
+// AUTO-TITLING ENGINE
+// ══════════════════════════════════════════════════════════════════
+// Extracts a clean, consistent title from a PDF filename + first-page text.
+
+const DOC_PATTERNS = [
+  // Transcripts
+  { match: /transcript/i, type:'transcript', title: 'Transcript' },
+  // Progress reports / report cards — seasonal + term timing
+  { match: /fall.*(interim|progress|mid)/i, type:'report', title:'Fall Interim Report' },
+  { match: /(interim|progress|mid).*fall/i, type:'report', title:'Fall Interim Report' },
+  { match: /fall.*(term|end|final|report)/i, type:'report', title:'Fall Term Report' },
+  { match: /(term|end|final).*fall/i, type:'report', title:'Fall Term Report' },
+  { match: /winter.*(interim|progress|mid)/i, type:'report', title:'Winter Interim Report' },
+  { match: /(interim|progress|mid).*winter/i, type:'report', title:'Winter Interim Report' },
+  { match: /winter.*(term|end|final|report)/i, type:'report', title:'Winter Term Report' },
+  { match: /(term|end|final).*winter/i, type:'report', title:'Winter Term Report' },
+  { match: /spring.*(interim|progress|mid)/i, type:'report', title:'Spring Interim Report' },
+  { match: /(interim|progress|mid).*spring/i, type:'report', title:'Spring Interim Report' },
+  { match: /spring.*(term|end|final|report)/i, type:'report', title:'Spring Term Report' },
+  { match: /(term|end|final).*spring/i, type:'report', title:'Spring Term Report' },
+  // Generic interim/progress if season not detected
+  { match: /interim|progress.report|mid.term/i, type:'report', title:'Interim Report' },
+  { match: /report.card|term.report|end.of.term/i, type:'report', title:'Term Report' },
+  // Comments
+  { match: /comment/i, type:'comments', title:'Academic Comments' },
+  { match: /advisor|advisory/i, type:'comments', title:'Advisor Comments' },
+  { match: /dorm|house|resident/i, type:'comments', title:'House Comments' },
+  // Surveys
+  { match: /college.research.*0|cr.?0/i, type:'survey', title:'College Research Survey #0' },
+  { match: /college.research.*1|cr.?1/i, type:'survey', title:'College Research Survey #1' },
+  { match: /college.research.*2|cr.?2/i, type:'survey', title:'College Research Survey #2' },
+  { match: /college.research.*3|cr.?3/i, type:'survey', title:'College Research Survey #3' },
+  { match: /college.list|working.list/i, type:'survey', title:'Working College List' },
+  { match: /survey|questionnaire|self.report/i, type:'survey', title:'Student Survey' },
+  // Parent
+  { match: /parent/i, type:'parent', title:'Parent Questionnaire' },
+  // Teacher recs
+  { match: /teacher.rec|recommendation/i, type:'teacher', title:'Teacher Recommendation' },
+  // Counselor
+  { match: /counselor|june.letter|strategy/i, type:'counselor', title:'Counselor Letter' },
+];
+
+// Year patterns
+const YEAR_RE = /20\d{2}[-–]\d{2,4}|20\d{2}/;
+
+function autoTitle(fileName, firstPageText) {
+  const combined = (fileName + ' ' + (firstPageText || '')).replace(/[_\-\.]/g, ' ');
+
+  // Find best matching pattern
+  let bestTitle = null;
+  let bestType = 'other';
+
+  // Try firstPageText first (more reliable), then filename
+  for (const src of [firstPageText || '', fileName]) {
+    const clean = src.replace(/[_\-\.]/g, ' ');
+    for (const pat of DOC_PATTERNS) {
+      if (pat.match.test(clean)) {
+        bestTitle = pat.title;
+        bestType = pat.type;
+        break;
+      }
+    }
+    if (bestTitle) break;
+  }
+
+  // Extract year
+  const yearMatch = combined.match(YEAR_RE);
+  const year = yearMatch ? yearMatch[0] : '';
+
+  // If we got a specific title from patterns
+  if (bestTitle) {
+    return { title: bestTitle + (year ? ', ' + year : ''), type: bestType };
+  }
+
+  // Fallback: clean up filename
+  const cleaned = fileName
+    .replace(/\.[^.]+$/, '')           // remove extension
+    .replace(/[_\-]+/g, ' ')          // underscores/hyphens to spaces
+    .replace(/\b\w/g, c => c.toUpperCase()) // title case
+    .trim();
+
+  return { title: cleaned, type: 'other' };
+}
+
+// Extract student name from filename if possible
+function extractStudentName(fileName) {
+  const clean = fileName.replace(/\.[^.]+$/, '').replace(/[_\-]+/g, ' ');
+  // Common patterns: "lastname_firstname_...", "firstname-lastname-..."
+  // Try to detect name-like segments at the start
+  const parts = clean.split(/\s+/);
+  if (parts.length >= 2) {
+    // Check if first two parts look like a name (no numbers, short-ish)
+    const a = parts[0], b = parts[1];
+    if (a.length > 1 && b.length > 1 && !/\d/.test(a) && !/\d/.test(b)) {
+      // Could be "LastName FirstName" or "FirstName LastName"
+      return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase() + ' ' +
+             b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
+    }
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// DOC TYPE COLORS
+// ══════════════════════════════════════════════════════════════════
+const TYPE_COLORS = {
+  transcript: '#5193c7',
+  report: '#cf7352',
+  comments: '#d4a843',
+  survey: '#5faa63',
+  parent: '#9b7dbf',
+  teacher: '#cf7352',
+  counselor: '#d47da0',
+  other: '#8a8a9a',
+};
+const TYPE_LABELS = {
+  transcript:'Transcript', report:'Report', comments:'Comments',
+  survey:'Survey', parent:'Parent', teacher:'Teacher Rec',
+  counselor:'Counselor', other:'Document',
+};
+
+// ══════════════════════════════════════════════════════════════════
+// STUDENT MANAGEMENT
+// ══════════════════════════════════════════════════════════════════
+document.getElementById('add-stu-btn').addEventListener('click', showAddModal);
+
+function showAddModal() {
+  document.getElementById('add-modal').classList.remove('hid');
+  const inp = document.getElementById('add-name');
+  inp.value = '';
+  inp.focus();
+  document.getElementById('add-go').disabled = true;
+}
+function hideAddModal() { document.getElementById('add-modal').classList.add('hid'); }
+
+document.getElementById('add-name').addEventListener('input', e => {
+  document.getElementById('add-go').disabled = !e.target.value.trim();
+});
+document.getElementById('add-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value.trim()) addStudent();
+});
+
+function addStudent() {
+  const name = document.getElementById('add-name').value.trim();
+  if (!name) return;
+  const id = 's_' + Date.now();
+  students.push({ id, name, docs: [] });
+  curStu = id;
+  hideAddModal();
+  render();
+  save();
+}
+
+function selectStudent(id) {
+  curStu = id;
+  render();
+}
+
+function showDelStuModal(id) {
+  const stu = students.find(s => s.id === id);
+  if (!stu) return;
+  delStuTarget = id;
+  document.getElementById('del-stu-msg').textContent =
+    `Remove "${stu.name}" and all their documents? This can't be undone.`;
+  document.getElementById('del-stu-modal').classList.remove('hid');
+}
+function hideDelStuModal() { document.getElementById('del-stu-modal').classList.add('hid'); delStuTarget = null; }
+function confirmDelStu() {
+  if (!delStuTarget) return;
+  students = students.filter(s => s.id !== delStuTarget);
+  if (curStu === delStuTarget) curStu = students.length > 0 ? students[0].id : null;
+  hideDelStuModal();
+  render();
+  save();
+  toast('Student removed');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// DOCUMENT MANAGEMENT
+// ══════════════════════════════════════════════════════════════════
+function showDelModal(docId) {
+  const stu = students.find(s => s.id === curStu);
+  const doc = stu?.docs.find(d => d.id === docId);
+  if (!doc) return;
+  delTarget = docId;
+  document.getElementById('del-msg').textContent =
+    `Remove "${doc.title}" from ${stu.name}?`;
+  document.getElementById('del-modal').classList.remove('hid');
+}
+function hideDelModal() { document.getElementById('del-modal').classList.add('hid'); delTarget = null; }
+function confirmDel() {
+  if (!delTarget) return;
+  const stu = students.find(s => s.id === curStu);
+  if (stu) stu.docs = stu.docs.filter(d => d.id !== delTarget);
+  delete openDocs[delTarget];
+  hideDelModal();
+  render();
+  save();
+  toast('Document removed');
+}
+
+// File upload handler
+document.getElementById('file-input').addEventListener('change', async e => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  const stu = students.find(s => s.id === curStu);
+  if (!stu) return;
+
+  for (const file of files) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    const id = 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+
+    if (ext === 'pdf') {
+      const arrayBuf = await file.arrayBuffer();
+      // Extract first page text for auto-titling
+      let firstPageText = '';
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuf.slice(0) }).promise;
+        const page = await pdf.getPage(1);
+        const tc = await page.getTextContent();
+        firstPageText = tc.items.map(i => i.str).join(' ');
+      } catch {}
+
+      const { title, type } = autoTitle(file.name, firstPageText);
+      stu.docs.push({ id, title, type, mode: 'pdf', pdfData: arrayBuf, fileName: file.name });
+      openDocs[id] = false;
+    } else {
+      const content = await file.text();
+      const { title, type } = autoTitle(file.name, content.slice(0, 500));
+      stu.docs.push({ id, title, type, mode: 'text', content, fileName: file.name });
+      openDocs[id] = false;
+    }
+  }
+
+  // Reset file input so same files can be re-uploaded
+  e.target.value = '';
+  render();
+  save();
+  toast(files.length === 1 ? 'Document added' : files.length + ' documents added');
+});
+
+// ══════════════════════════════════════════════════════════════════
+// PDF RENDERING
+// ══════════════════════════════════════════════════════════════════
+async function renderPdf(container, pdfData) {
+  container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t4)"><span class="dots"><span></span><span></span><span></span></span> Rendering...</div>';
+  try {
     const dataCopy = pdfData.slice(0);
-    const pdf=await pdfjsLib.getDocument({data:dataCopy}).promise;
-    container.innerHTML='';
-    const scale=1.5;
-    for(let i=1;i<=pdf.numPages;i++){
-      const page=await pdf.getPage(i);
-      const viewport=page.getViewport({scale});
-      const canvas=document.createElement('canvas');
-      canvas.width=viewport.width;
-      canvas.height=viewport.height;
-      const ctx=canvas.getContext('2d');
-      await page.render({canvasContext:ctx,viewport}).promise;
+    const pdf = await pdfjsLib.getDocument({ data: dataCopy }).promise;
+    container.innerHTML = '';
+    const scale = 1.5;
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width;
+      canvas.height = vp.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
       container.appendChild(canvas);
     }
-  }catch(err){
-    console.error('PDF render error:',err);
-    container.innerHTML='<div style="padding:20px;color:#991b1b;font-size:13px">Could not render this PDF. It may be password-protected or corrupted.</div>';
+  } catch (err) {
+    console.error('PDF render error:', err);
+    container.innerHTML = '<div style="padding:20px;color:#991b1b;font-size:13px">Could not render this PDF.</div>';
   }
 }
 
-// Render documents
-function rDocs(){
-  const list=document.getElementById('doc-list');
-  const es=document.getElementById('empty-st');
-  const tb=document.getElementById('tog-btn');
-  if(docs.length===0){es.classList.remove('hid');tb.classList.add('hid');return}
-  es.classList.add('hid');tb.classList.remove('hid');
-  list.querySelectorAll('.dc').forEach(el=>el.remove());
-  list.querySelectorAll('.reup-banner').forEach(el=>el.remove());
+// ══════════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════════
+function render() {
+  renderTabs();
+  renderMain();
+}
 
-  docs.forEach(doc=>{
-    const dt=DT[doc.type]||DT.other;
-    const open=!!openDocs[doc.id];
+function renderTabs() {
+  const container = document.getElementById('stu-tabs');
+  container.innerHTML = '';
+  students.forEach(s => {
+    const tab = document.createElement('button');
+    tab.className = 'stu-tab' + (s.id === curStu ? ' on' : '');
+    tab.innerHTML = esc(s.name) +
+      `<span class="x" title="Remove student" onclick="event.stopPropagation();showDelStuModal('${s.id}')">✕</span>`;
+    tab.addEventListener('click', () => selectStudent(s.id));
+    container.appendChild(tab);
+  });
+}
 
-    // If PDF needs re-upload after browser restart
-    if(doc.mode==='pdf'&&!doc.pdfData){
-      const banner=document.createElement('div');
-      banner.className='reup-banner';
-      banner.innerHTML=`<span>📄 <strong>${esc(doc.title)}</strong> — re-select file after browser restart:</span>
-        <input type="file" accept=".pdf" style="font-size:12px">`;
-      banner.querySelector('input').addEventListener('change',async e=>{
-        const f=e.target.files?.[0]; if(!f)return;
-        doc.pdfData=await f.arrayBuffer(); doc.fileName=f.name;
-        rDocs();
-      });
-      list.appendChild(banner);
-      return;
-    }
+function renderMain() {
+  const noStu = document.getElementById('no-student');
+  const view = document.getElementById('student-view');
 
-    const card=document.createElement('div');
-    card.className='dc'+(open?' open':'');
+  if (!curStu || !students.find(s => s.id === curStu)) {
+    noStu.classList.remove('hid');
+    view.classList.add('hid');
+    return;
+  }
+  noStu.classList.add('hid');
+  view.classList.remove('hid');
 
-    const hdr=document.createElement('button');
-    hdr.className='dc-h';
-    hdr.innerHTML=`
-      <span style="color:var(--t4);flex-shrink:0;font-size:12px">${open?'▾':'▸'}</span>
-      <span class="dc-badge" style="background:${dt.c}18;color:${dt.c}">${dt.l}</span>
-      <span class="dc-title">${esc(doc.title)}</span>
-      ${doc.mode==='pdf'?'<span style="font-size:10px;color:var(--t4);background:var(--s0);padding:2px 7px;border-radius:4px">PDF</span>':''}
+  const stu = students.find(s => s.id === curStu);
+  const grid = document.getElementById('doc-grid');
+  const noDocs = document.getElementById('no-docs');
+
+  // Clear old cards
+  grid.querySelectorAll('.dc').forEach(el => el.remove());
+
+  if (stu.docs.length === 0) {
+    noDocs.classList.remove('hid');
+    document.getElementById('toggle-all').classList.add('hid');
+    return;
+  }
+  noDocs.classList.add('hid');
+  document.getElementById('toggle-all').classList.remove('hid');
+
+  // Sort: group by type, then alphabetical within type
+  const typeOrder = ['transcript','report','comments','survey','parent','teacher','counselor','other'];
+  const sorted = [...stu.docs].sort((a, b) => {
+    const ai = typeOrder.indexOf(a.type), bi = typeOrder.indexOf(b.type);
+    if (ai !== bi) return ai - bi;
+    return a.title.localeCompare(b.title);
+  });
+
+  sorted.forEach(doc => {
+    const open = !!openDocs[doc.id];
+    const color = TYPE_COLORS[doc.type] || TYPE_COLORS.other;
+    const label = TYPE_LABELS[doc.type] || 'Document';
+
+    const card = document.createElement('div');
+    card.className = 'dc' + (open ? ' open' : '');
+
+    const hdr = document.createElement('div');
+    hdr.className = 'dc-h';
+    hdr.innerHTML = `
+      <span class="dc-chev">${open ? '▾' : '▸'}</span>
+      <span class="dc-badge" style="background:${color}18;color:${color}">${esc(label)}</span>
+      <span class="dc-title" title="${esc(doc.title)}">${esc(doc.title)}</span>
+      <span class="dc-meta">${doc.fileName ? esc(doc.fileName) : ''}</span>
+      <button class="dc-del" onclick="event.stopPropagation();showDelModal('${doc.id}')">Remove</button>
     `;
-    hdr.onclick=()=>{openDocs[doc.id]=!openDocs[doc.id];rDocs()};
+    hdr.style.cursor = 'pointer';
+    hdr.addEventListener('click', () => { openDocs[doc.id] = !openDocs[doc.id]; render(); });
     card.appendChild(hdr);
 
-    if(open){
-      const body=document.createElement('div');
-      body.className='dc-body';
-      if(doc.mode==='pdf'&&doc.pdfData){
-        const pages=document.createElement('div');
-        pages.className='pdf-pages';
+    if (open) {
+      const body = document.createElement('div');
+      body.className = 'dc-body';
+      if (doc.mode === 'pdf' && doc.pdfData) {
+        const pages = document.createElement('div');
+        pages.className = 'pdf-pages';
         body.appendChild(pages);
-        // Render async after DOM insertion
-        setTimeout(()=>renderPdfToContainer(pages,doc.pdfData),0);
-      }else if(doc.mode==='text'&&doc.content){
-        const div=document.createElement('div');
-        div.className='text-content';
-        div.textContent=doc.content;
+        setTimeout(() => renderPdf(pages, doc.pdfData), 0);
+      } else if (doc.mode === 'text' && doc.content) {
+        const div = document.createElement('div');
+        div.className = 'text-content';
+        div.textContent = doc.content;
         body.appendChild(div);
       }
       card.appendChild(body);
     }
-    list.appendChild(card);
+    grid.appendChild(card);
   });
 
-  const allOpen=docs.every(d=>openDocs[d.id]);
-  tb.textContent=allOpen?'Collapse All':'Expand All';
+  // Toggle all button
+  const allOpen = stu.docs.every(d => openDocs[d.id]);
+  document.getElementById('toggle-all').textContent = allOpen ? 'Collapse All' : 'Expand All';
 }
 
-document.getElementById('tog-btn').addEventListener('click',()=>{
-  const ao=docs.every(d=>openDocs[d.id]);
-  docs.forEach(d=>{openDocs[d.id]=!ao}); rDocs();
+document.getElementById('toggle-all').addEventListener('click', () => {
+  const stu = students.find(s => s.id === curStu);
+  if (!stu) return;
+  const allOpen = stu.docs.every(d => openDocs[d.id]);
+  stu.docs.forEach(d => { openDocs[d.id] = !allOpen; });
+  render();
 });
 
-// Letter
-document.getElementById('letter-ta').addEventListener('input',e=>{
-  draft=e.target.value;
-  const wc=draft.trim()?draft.trim().split(/\s+/).length:0;
-  document.getElementById('wc').textContent=wc+' word'+(wc!==1?'s':'');
-  save();
-});
-
-// AI
-function buildSys(){
-  const ds=docs.map(d=>{
-    const dt=DT[d.type]||DT.other;
-    if(d.mode==='text'&&d.content)return`[${dt.l}] ${d.title}:\n${d.content.slice(0,3000)}${d.content.length>3000?'...':''}`;
-    return`[${dt.l}] ${d.title}: (PDF — counselor is viewing the original document)`;
-  }).join('\n\n---\n\n');
-  const hs=hls.map(h=>{const t=TM[h.themeId];return`[${t?.l||h.themeId}] "${h.text}" — from ${h.docTitle}`}).join('\n');
-  return`You are an expert college counseling assistant helping write a recommendation letter for ${stuName} at The Lawrenceville School.
-
-DOCUMENTS LOADED:
-${ds}
-
-COUNSELOR'S KEY EXCERPTS AND OBSERVATIONS (typed by the counselor while reading):
-${hs||'(None yet)'}
-
-${draft?'CURRENT LETTER DRAFT:\n'+draft:'(No draft yet)'}
-
-Your role: suggest specific language drawing from the excerpts, identify narrative arcs, flag missing themes, recommend sequencing. Be specific and concise.`;
+// ══════════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════════
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2000);
 }
 
-async function aiSend(text){
-  if(!text)text=document.getElementById('ai-in').value.trim();
-  if(!text||aiLoad)return;
-  document.getElementById('ai-in').value='';
-  aiMsgs.push({role:'user',content:text}); aiLoad=true; rAI();
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:buildSys(),messages:aiMsgs.map(m=>({role:m.role,content:m.content}))}),
-    });
-    const d=await r.json();
-    const reply=d.content?.map(b=>b.text||'').join('')||'Sorry, couldn\'t generate a response.';
-    aiMsgs.push({role:'assistant',content:reply});
-  }catch{aiMsgs.push({role:'assistant',content:'Connection error. Try again.'})}
-  aiLoad=false; rAI();
+// ══════════════════════════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════════════════════════
+function ab2b64(buf) {
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  // Process in chunks to avoid call stack overflow
+  const chunk = 8192;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
 }
-
-function rAI(){
-  const c=document.getElementById('ai-msgs');
-  if(aiMsgs.length===0)return;
-  let html='';
-  aiMsgs.forEach(m=>{
-    html+=`<div style="margin-bottom:10px;display:flex;justify-content:${m.role==='user'?'flex-end':'flex-start'}"><div class="ai-b ${m.role==='user'?'u':'a'}">${esc(m.content)}</div></div>`;
-  });
-  if(aiLoad)html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12px;color:var(--t4)"><span class="dots"><span></span><span></span><span></span></span> Thinking...</div>';
-  c.innerHTML=html; c.scrollTop=c.scrollHeight;
-}
-
-// Utils
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='flex';setTimeout(()=>t.style.display='none',2000)}
-
-// Persistence — PDF data stored as base64
-function arrayBufToBase64(buf){
-  const bytes=new Uint8Array(buf);
-  let binary='';
-  for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-function base64ToArrayBuf(b64){
-  const binary=atob(b64);
-  const bytes=new Uint8Array(binary.length);
-  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+function b642ab(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return bytes.buffer;
 }
 
-function save(){
-  try{
-    const sd=docs.map(d=>{
-      if(d.mode==='pdf'&&d.pdfData){
-        return{...d,pdfB64:arrayBufToBase64(d.pdfData),pdfData:undefined};
-      }
-      return{...d,pdfData:undefined};
-    });
-    localStorage.setItem('recos4',JSON.stringify({stuName,docs:sd,hls,draft,openDocs}));
-  }catch(e){
-    // If localStorage is full (PDFs can be large), silently fail
-    console.warn('Save failed (storage may be full):',e);
+function save() {
+  try {
+    const data = {
+      students: students.map(s => ({
+        ...s,
+        docs: s.docs.map(d => {
+          if (d.mode === 'pdf' && d.pdfData) {
+            return { ...d, pdfB64: ab2b64(d.pdfData), pdfData: undefined };
+          }
+          return { ...d, pdfData: undefined };
+        })
+      })),
+      curStu,
+      openDocs,
+    };
+    localStorage.setItem('recos5', JSON.stringify(data));
+  } catch (e) {
+    console.warn('Save failed:', e.message);
   }
 }
-function load(){
-  try{
-    const raw=localStorage.getItem('recos4');if(!raw)return false;
-    const s=JSON.parse(raw);if(!s.stuName)return false;
-    stuName=s.stuName;docs=s.docs||[];hls=s.hls||[];draft=s.draft||'';openDocs=s.openDocs||{};
-    // Restore ArrayBuffers from base64
-    docs.forEach(d=>{
-      if(d.mode==='pdf'&&d.pdfB64){
-        d.pdfData=base64ToArrayBuf(d.pdfB64);
-        delete d.pdfB64;
-      }
-    });
-    return true;
-  }catch{return false}
-}
-setInterval(save,10000);
 
-if(load()){
-  document.getElementById('setup').classList.add('hid');
-  document.getElementById('app').classList.remove('hid');
-  document.getElementById('stu-name').textContent=stuName;
-  document.getElementById('letter-ta').value=draft;
-  rTP();rDocs();rSD();rNar();
+function load() {
+  try {
+    const raw = localStorage.getItem('recos5');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    students = data.students || [];
+    curStu = data.curStu || null;
+    openDocs = data.openDocs || {};
+    // Restore ArrayBuffers
+    students.forEach(s => {
+      s.docs.forEach(d => {
+        if (d.mode === 'pdf' && d.pdfB64) {
+          d.pdfData = b642ab(d.pdfB64);
+          delete d.pdfB64;
+        }
+      });
+    });
+    return students.length > 0;
+  } catch { return false; }
+}
+
+setInterval(save, 10000);
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+if (load()) {
+  render();
+} else {
+  render();
 }
 </script>
 </body>
