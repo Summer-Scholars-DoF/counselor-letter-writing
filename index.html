@@ -146,18 +146,6 @@ button,input,select,textarea{font-family:var(--font-b)}
 .gal-card-body canvas{display:block;width:100%;margin-bottom:4px}
 .gal-card-actions{padding:6px 10px;border-top:1px solid var(--border);display:flex;gap:4px;flex-shrink:0;background:var(--lt-gray)}
 
-/* ── Notes ── */
-.notes-section{
-  padding:16px 24px;border-top:1px solid var(--border);background:var(--white);flex-shrink:0;
-}
-.notes-label{font-family:var(--font-h);font-size:12px;color:var(--gold);font-weight:bold;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.notes-ta{
-  width:100%;padding:8px 12px;border-radius:4px;border:1px solid var(--border);
-  background:var(--lt-gray);color:var(--black);font-size:13px;line-height:1.6;
-  outline:none;resize:none;min-height:40px;max-height:100px;
-}
-.notes-ta:focus{border-color:var(--gold)}
-
 /* ── Empty States ── */
 .empty{padding:60px 20px;text-align:center}
 .empty-icon{font-size:36px;margin-bottom:12px;opacity:.2}
@@ -224,9 +212,9 @@ button,input,select,textarea{font-family:var(--font-b)}
     <div id="stu-view" class="hid" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
       <div class="toolbar">
         <div class="toolbar-left">
-          <button class="upload-btn" id="upload-btn">
+          <button class="upload-btn" id="upload-btn" style="position:relative;overflow:hidden">
             <span style="font-size:15px">+</span> Add Documents
-            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer">
+            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:1">
           </button>
           <span class="doc-count" id="doc-count"></span>
         </div>
@@ -246,13 +234,6 @@ button,input,select,textarea{font-family:var(--font-b)}
         <div id="gallery-view" class="gallery hid"></div>
       </div>
 
-      <!-- Notes -->
-      <div class="notes-section">
-        <div class="notes-label">
-          <span style="color:var(--gold)">◆</span> Counselor Notes
-        </div>
-        <textarea id="notes-ta" class="notes-ta" placeholder="Key themes, reminders, narrative ideas..." rows="2"></textarea>
-      </div>
     </div>
   </div>
 </div>
@@ -317,11 +298,26 @@ const DT={
 function autoTitle(fileName, fpText){
   const txt = (fpText||'').replace(/\s+/g,' ');
   const fn = fileName.replace(/[_\-]+/g,' ');
-  const combined = txt + ' ' + fn;
 
-  // Try to extract title directly from PDF text first
-  // Look for known Lawrenceville report headers
-  const directPatterns = [
+  // Patterns that match full title phrases including year
+  // Try to grab the full phrase like "Winter Interim Report, 2025-26" directly
+  const fullPatterns = [
+    {re:/Winter\s+Interim\s+Report,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Winter Interim Report, '+m[1],type:'report'})},
+    {re:/Fall\s+Interim\s+Report,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Fall Interim Report, '+m[1],type:'report'})},
+    {re:/Spring\s+Interim\s+Report,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Spring Interim Report, '+m[1],type:'report'})},
+    {re:/Winter\s+Term[\s\-]*End\s+(?:Report|Comment)s?,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Winter Term End Comments, '+m[1],type:'comments'})},
+    {re:/Fall\s+Term[\s\-]*End\s+(?:Report|Comment)s?,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Fall Term End Comments, '+m[1],type:'comments'})},
+    {re:/Spring\s+Term[\s\-]*End\s+(?:Report|Comment)s?,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Spring Term End Comments, '+m[1],type:'comments'})},
+  ];
+
+  // Try full patterns with year on PDF text first
+  for(const p of fullPatterns){
+    const m = txt.match(p.re);
+    if(m) return p.make(m);
+  }
+
+  // Simple patterns (no year capture)
+  const simplePatterns = [
     {re:/Winter\s+Interim\s+Report/i, title:'Winter Interim Report', type:'report'},
     {re:/Fall\s+Interim\s+Report/i, title:'Fall Interim Report', type:'report'},
     {re:/Spring\s+Interim\s+Report/i, title:'Spring Interim Report', type:'report'},
@@ -331,10 +327,6 @@ function autoTitle(fileName, fpText){
     {re:/Winter\s+Term\s+Report/i, title:'Winter Term Report', type:'report'},
     {re:/Fall\s+Term\s+Report/i, title:'Fall Term Report', type:'report'},
     {re:/Spring\s+Term\s+Report/i, title:'Spring Term Report', type:'report'},
-    {re:/End[\s\-]*of[\s\-]*Term\s+Comment/i, title:'Term End Comments', type:'comments'},
-    {re:/Progress\s+Report.*Winter/i, title:'Winter Progress Report', type:'report'},
-    {re:/Progress\s+Report.*Fall/i, title:'Fall Progress Report', type:'report'},
-    {re:/Progress\s+Report.*Spring/i, title:'Spring Progress Report', type:'report'},
     {re:/Transcript/i, title:'Transcript', type:'transcript'},
     {re:/College\s+Research\s+Survey?\s*#?\s*0/i, title:'College Research Survey #0', type:'survey'},
     {re:/College\s+Research\s+Survey?\s*#?\s*1/i, title:'College Research Survey #1', type:'survey'},
@@ -347,11 +339,11 @@ function autoTitle(fileName, fpText){
     {re:/Dorm(itory)?\s+Comment|House\s+(Comment|Report)/i, title:'House Comments', type:'comments'},
   ];
 
-  // Check PDF text first (most reliable), then filename
   for(const src of [txt, fn]){
-    for(const p of directPatterns){
+    for(const p of simplePatterns){
       if(p.re.test(src)){
-        const yearMatch = combined.match(/20\d{2}[\-–](?:\d{2}|\d{4})/);
+        // Try to find a year near the match in the PDF text only
+        const yearMatch = txt.match(/20\d{2}[\-–]\d{2}/);
         const year = yearMatch ? ', '+yearMatch[0] : '';
         return {title: p.title+year, type: p.type};
       }
@@ -478,13 +470,6 @@ function setView(v){
   render();
 }
 
-// ══════════════ NOTES ══════════════
-document.getElementById('notes-ta').addEventListener('input',e=>{
-  const stu=students.find(s=>s.id===curStu);
-  if(stu)stu.notes=e.target.value;
-  save();
-});
-
 // ══════════════ RENDER ══════════════
 function render(){
   renderTabs();
@@ -496,7 +481,6 @@ function render(){
   noStu.style.display='none';stuView.classList.remove('hid');stuView.style.display='flex';
   const stu=students.find(s=>s.id===curStu);
   document.getElementById('doc-count').textContent=stu.docs.length+' document'+(stu.docs.length!==1?'s':'');
-  document.getElementById('notes-ta').value=stu.notes||'';
 
   const noDocs=document.getElementById('no-docs');
   const accView=document.getElementById('accordion-view');
