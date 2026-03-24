@@ -3,109 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RecOS — Document Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;0,8..60,800;1,8..60,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>RecOS — The Lawrenceville School</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
-:root{
-  --fd:'Source Serif 4',serif;
-  --fb:'Outfit',sans-serif;
-  --bg:#f3f2ee;--s1:#ffffff;
-  --b1:#ddd9d1;--b2:#c8c3bb;
-  --t1:#1c1917;--t2:#3d3830;--t3:#6d6860;--t4:#9e9a92;
-  --a1:#b45936;--a1bg:rgba(180,89,54,0.07);
-  --red:#dc2626;--redbg:rgba(220,38,38,0.06);
+/* ═══════════════════════════════════════════════════
+   LAWRENCEVILLE BRAND SYSTEM
+   Primary: #ba0c2f (red), #000000 (black), #ffffff (white)
+   Secondary: #b38d42 (gold), #8c122a (dark red), #434343 (gray)
+   Fonts: Georgia (headings), Arial (body)
+   ═══════════════════════════════════════════════════ */
+:root {
+  --red: #ba0c2f;
+  --dk-red: #8c122a;
+  --black: #000000;
+  --gold: #b38d42;
+  --gray: #434343;
+  --lt-gray: #f7f6f4;
+  --mid-gray: #e8e6e2;
+  --border: #d5d1ca;
+  --white: #ffffff;
+  --font-h: Georgia, 'Times New Roman', serif;
+  --font-b: Arial, Helvetica, sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:var(--fb);background:var(--bg);color:var(--t1)}
-::-webkit-scrollbar{width:6px}
+body{font-family:var(--font-b);background:var(--lt-gray);color:var(--black)}
+::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--b1);border-radius:3px}
-button,input,select{font-family:var(--fb)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+button,input,select,textarea{font-family:var(--font-b)}
 
-/* Layout */
+/* ── Layout ── */
 #app{display:flex;flex-direction:column;height:100vh}
 
-/* Top bar */
-.topbar{padding:10px 20px;border-bottom:1px solid var(--b1);background:var(--s1);display:flex;align-items:center;gap:16px;flex-shrink:0}
-.logo{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.03em;flex-shrink:0}
-.logo span{color:var(--a1);font-weight:700}
+/* ── Top Bar ── */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;
+}
+.topbar-main{
+  padding:12px 24px;display:flex;align-items:center;gap:20px;
+  border-bottom:3px solid var(--red);
+}
+.logo-area{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.logo-seal{width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;color:var(--white);font-family:var(--font-h);font-size:14px;font-weight:bold;letter-spacing:-0.5px}
+.logo-text{font-family:var(--font-h);font-size:17px;color:var(--black);line-height:1.15}
+.logo-text span{display:block;font-size:10px;color:var(--gold);font-family:var(--font-b);font-weight:bold;letter-spacing:0.12em;text-transform:uppercase}
+.gold-divider{width:1px;height:28px;background:var(--gold);flex-shrink:0}
 
 /* Student tabs */
-.stu-tabs{display:flex;gap:4px;flex:1;overflow-x:auto;padding:2px 0;min-width:0}
-.stu-tabs::-webkit-scrollbar{height:3px}
-.stu-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--b1);background:var(--bg);color:var(--t3);cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;transition:all .12s;flex-shrink:0}
-.stu-tab:hover{border-color:var(--b2);color:var(--t2)}
-.stu-tab.on{background:var(--a1);border-color:var(--a1);color:#fff}
-.stu-tab .x{margin-left:6px;opacity:.5;font-size:11px}
-.stu-tab.on .x{opacity:.7}
-.add-stu{padding:6px 12px;border-radius:6px;border:1px dashed var(--b1);background:transparent;color:var(--t4);cursor:pointer;font-size:18px;line-height:1;flex-shrink:0;transition:all .12s}
-.add-stu:hover{border-color:var(--a1);color:var(--a1)}
+.stu-row{padding:8px 24px;display:flex;align-items:center;gap:6px;overflow-x:auto;background:var(--lt-gray)}
+.stu-row::-webkit-scrollbar{height:3px}
+.stu-tab{
+  padding:6px 16px;border-radius:4px 4px 0 0;border:1px solid var(--border);border-bottom:none;
+  background:var(--white);color:var(--gray);cursor:pointer;font-size:12px;font-weight:bold;
+  white-space:nowrap;transition:all .15s;flex-shrink:0;position:relative;
+}
+.stu-tab:hover{color:var(--black);border-color:var(--gold)}
+.stu-tab.on{background:var(--white);color:var(--red);border-color:var(--red);border-bottom:2px solid var(--white);margin-bottom:-1px;z-index:1}
+.stu-tab .x{margin-left:8px;opacity:0;font-size:10px;color:var(--gray);transition:opacity .15s}
+.stu-tab:hover .x{opacity:.6}
+.stu-tab .x:hover{opacity:1;color:var(--red)}
+.add-stu{
+  padding:6px 14px;border-radius:4px;border:1px dashed var(--border);
+  background:transparent;color:var(--gold);cursor:pointer;font-size:16px;font-weight:bold;
+  flex-shrink:0;transition:all .15s;
+}
+.add-stu:hover{border-color:var(--red);color:var(--red)}
 
-/* Main area */
-.main{flex:1;overflow-y:auto;padding:16px 20px}
+/* ── Main Area ── */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
 
-/* Upload bar */
-.upload-bar{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
-.upload-zone{flex:1;min-width:250px;border:2px dashed var(--b1);border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:12px;background:var(--s1);transition:border-color .2s;cursor:pointer;position:relative}
-.upload-zone:hover{border-color:var(--a1)}
-.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-icon{font-size:20px;opacity:.4}
-.upload-text{font-size:13px;color:var(--t3)}
-.upload-text strong{color:var(--t2)}
-.btn-expand{padding:7px 14px;border-radius:6px;border:1px solid var(--b1);background:var(--s1);color:var(--t3);cursor:pointer;font-size:12px;font-weight:500}
+/* Toolbar */
+.toolbar{
+  padding:12px 24px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);background:var(--white);flex-shrink:0;flex-wrap:wrap;
+}
+.toolbar-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.toolbar-right{display:flex;align-items:center;gap:8px}
+.upload-btn{
+  padding:8px 18px;border-radius:4px;border:none;
+  background:var(--red);color:var(--white);cursor:pointer;
+  font-size:13px;font-weight:bold;display:flex;align-items:center;gap:6px;
+  transition:background .15s;
+}
+.upload-btn:hover{background:var(--dk-red)}
+.view-btn{
+  padding:6px 12px;border-radius:4px;border:1px solid var(--border);
+  background:var(--white);color:var(--gray);cursor:pointer;font-size:12px;font-weight:bold;
+  transition:all .12s;
+}
+.view-btn.on{background:var(--black);color:var(--white);border-color:var(--black)}
+.view-btn:hover:not(.on){border-color:var(--gold);color:var(--black)}
+.doc-count{font-size:12px;color:var(--gray)}
 
-/* Doc grid */
-.doc-grid{display:flex;flex-direction:column;gap:6px}
+/* Content area */
+.content{flex:1;overflow-y:auto;padding:16px 24px}
 
-/* Doc card */
-.dc{border:1px solid var(--b1);border-radius:8px;background:var(--s1);overflow:hidden;transition:border-color .15s}
-.dc.open{border-color:var(--b2)}
-.dc-h{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:none;border:none;cursor:pointer;text-align:left}
-.dc-chev{color:var(--t4);flex-shrink:0;font-size:12px;transition:transform .15s}
-.dc-badge{padding:2px 9px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
-.dc-title{font-size:13.5px;font-weight:600;color:var(--t1);font-family:var(--fd);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dc-meta{font-size:11px;color:var(--t4);flex-shrink:0}
-.dc-del{padding:4px 8px;border-radius:5px;border:none;background:transparent;color:var(--t4);cursor:pointer;font-size:11px;font-weight:600;opacity:0;transition:all .15s;flex-shrink:0}
-.dc-h:hover .dc-del{opacity:1}
-.dc-del:hover{background:var(--redbg);color:var(--red)}
-.dc-body{border-top:1px solid var(--b1)}
-.pdf-pages{max-height:650px;overflow-y:auto;background:#e8e6e1;padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.pdf-pages canvas{display:block;max-width:100%;box-shadow:0 1px 4px rgba(0,0,0,.1);background:#fff}
-.text-content{padding:14px 18px;font-size:13.5px;line-height:1.8;color:var(--t1);white-space:pre-wrap;max-height:500px;overflow-y:auto}
+/* ── Accordion View ── */
+.dc{border:1px solid var(--border);border-radius:4px;margin-bottom:6px;background:var(--white);overflow:hidden;transition:border-color .15s}
+.dc.open{border-color:var(--gold)}
+.dc-h{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:10px 16px;background:none;border:none;cursor:pointer;text-align:left;
+}
+.dc-h:hover{background:var(--lt-gray)}
+.dc-chev{color:var(--gray);flex-shrink:0;font-size:11px;transition:transform .15s}
+.dc-badge{
+  padding:2px 10px;border-radius:2px;font-size:10px;font-weight:bold;
+  letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;
+  font-family:var(--font-b);
+}
+.dc-title{font-size:13px;font-weight:bold;color:var(--black);font-family:var(--font-h);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-title-input{font-size:13px;font-weight:bold;color:var(--black);font-family:var(--font-h);border:1px solid var(--gold);border-radius:3px;padding:2px 8px;outline:none;width:100%}
+.dc-meta{font-size:10px;color:var(--gray);flex-shrink:0;font-style:italic}
+.dc-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s;flex-shrink:0}
+.dc-h:hover .dc-actions{opacity:1}
+.dc-act-btn{padding:3px 8px;border-radius:3px;border:none;background:transparent;color:var(--gray);cursor:pointer;font-size:11px;font-weight:bold}
+.dc-act-btn:hover{background:var(--mid-gray);color:var(--black)}
+.dc-act-btn.del:hover{background:#fef2f2;color:var(--red)}
+.dc-body{border-top:1px solid var(--border)}
+.gold-rule{height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:0 16px}
+.pdf-pages{max-height:650px;overflow-y:auto;background:#e8e6e1;padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.pdf-pages canvas{display:block;max-width:100%;box-shadow:0 2px 8px rgba(0,0,0,.12);background:var(--white)}
+.text-content{padding:16px 20px;font-size:14px;line-height:1.8;color:var(--black);white-space:pre-wrap;max-height:500px;overflow-y:auto}
 
-/* Empty state */
+/* ── Gallery View ── */
+.gallery{display:flex;gap:16px;overflow-x:auto;padding:16px 0;height:100%}
+.gallery::-webkit-scrollbar{height:8px}
+.gal-card{
+  flex-shrink:0;width:420px;display:flex;flex-direction:column;
+  border:1px solid var(--border);border-radius:4px;background:var(--white);overflow:hidden;
+}
+.gal-card-header{
+  padding:8px 14px;border-bottom:2px solid var(--red);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.gal-card-title{font-family:var(--font-h);font-size:12.5px;font-weight:bold;color:var(--black);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gal-card-badge{padding:1px 8px;border-radius:2px;font-size:9px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+.gal-card-body{flex:1;overflow-y:auto;background:#e8e6e1}
+.gal-card-body canvas{display:block;width:100%;margin-bottom:4px}
+.gal-card-actions{padding:6px 10px;border-top:1px solid var(--border);display:flex;gap:4px;flex-shrink:0;background:var(--lt-gray)}
+
+/* ── Notes ── */
+.notes-section{
+  padding:16px 24px;border-top:1px solid var(--border);background:var(--white);flex-shrink:0;
+}
+.notes-label{font-family:var(--font-h);font-size:12px;color:var(--gold);font-weight:bold;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.notes-ta{
+  width:100%;padding:8px 12px;border-radius:4px;border:1px solid var(--border);
+  background:var(--lt-gray);color:var(--black);font-size:13px;line-height:1.6;
+  outline:none;resize:none;min-height:40px;max-height:100px;
+}
+.notes-ta:focus{border-color:var(--gold)}
+
+/* ── Empty States ── */
 .empty{padding:60px 20px;text-align:center}
-.empty-icon{font-size:40px;margin-bottom:12px;opacity:.15}
-.empty-title{font-size:15px;font-weight:600;color:var(--t3);margin-bottom:6px}
-.empty-sub{font-size:13px;color:var(--t4);line-height:1.6;max-width:400px;margin:0 auto}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:.2}
+.empty-title{font-family:var(--font-h);font-size:16px;color:var(--gray);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--gray);line-height:1.6;max-width:420px;margin:0 auto}
 
-/* Modal */
-.modal-ov{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
-.modal-bx{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:24px;width:420px;max-width:90vw}
-.modal-bx h3{font-family:var(--fd);font-size:17px;color:var(--t1);margin:0 0 16px}
-.modal-bx input{width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--b1);background:var(--bg);color:var(--t1);font-size:14px;outline:none}
-.modal-bx .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-.btn-p{padding:8px 16px;border-radius:7px;border:none;background:var(--a1);color:#fff;cursor:pointer;font-size:13px;font-weight:600}
-.btn-p:disabled{opacity:.4;cursor:default}
-.btn-s{padding:8px 16px;border-radius:7px;border:1px solid var(--b1);background:transparent;color:var(--t3);cursor:pointer;font-size:13px}
-.btn-g{background:none;border:none;cursor:pointer;color:var(--t4);padding:3px}
+/* ── Modal ── */
+.modal-ov{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+.modal-bx{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:24px;width:420px;max-width:90vw}
+.modal-bx h3{font-family:var(--font-h);font-size:17px;color:var(--black);margin:0 0 16px;border-bottom:2px solid var(--red);padding-bottom:8px}
+.modal-bx input{width:100%;padding:10px 12px;border-radius:4px;border:1px solid var(--border);background:var(--lt-gray);color:var(--black);font-size:14px;outline:none}
+.modal-bx input:focus{border-color:var(--gold)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-r{padding:8px 18px;border-radius:4px;border:none;background:var(--red);color:var(--white);cursor:pointer;font-size:13px;font-weight:bold}
+.btn-r:hover{background:var(--dk-red)}
+.btn-r:disabled{opacity:.4;cursor:default}
+.btn-o{padding:8px 18px;border-radius:4px;border:1px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;font-size:13px}
+.btn-o:hover{border-color:var(--gold);color:var(--black)}
+.confirm-msg{font-size:14px;color:var(--gray);line-height:1.6;margin-bottom:16px}
 
-/* Confirm dialog */
-.confirm-msg{font-size:13.5px;color:var(--t2);line-height:1.6;margin-bottom:16px}
+/* ── Toast ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--black);color:var(--white);padding:10px 20px;border-radius:4px;font-size:13px;font-weight:bold;display:none;white-space:nowrap;border-left:3px solid var(--gold)}
 
-/* Loading dots */
+/* ── Dots ── */
 .dots{display:inline-flex;gap:3px;align-items:center}
-.dots span{width:5px;height:5px;border-radius:50%;background:var(--a1);opacity:.3;animation:bk 1.2s infinite}
+.dots span{width:5px;height:5px;border-radius:50%;background:var(--red);opacity:.3;animation:bk 1.2s infinite}
 .dots span:nth-child(2){animation-delay:.2s}
 .dots span:nth-child(3){animation-delay:.4s}
 @keyframes bk{0%,100%{opacity:.15}50%{opacity:.7}}
-
-/* Toast */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--t1);color:var(--bg);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;display:none;white-space:nowrap}
-
 .hid{display:none!important}
+
+/* ── Gold accent line (decorative) ── */
+.gold-accent{height:1px;background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--gold) 80%,transparent);margin:0}
 </style>
 </head>
 <body>
@@ -113,37 +198,60 @@ button,input,select{font-family:var(--fb)}
 <div id="app">
   <!-- TOP BAR -->
   <div class="topbar">
-    <div class="logo">Rec<span>OS</span></div>
-    <div class="stu-tabs" id="stu-tabs"></div>
-    <button class="add-stu" id="add-stu-btn" title="Add student">+</button>
+    <div class="topbar-main">
+      <div class="logo-area">
+        <div class="logo-seal">L</div>
+        <div class="logo-text">RecOS<span>College Counseling</span></div>
+      </div>
+      <div class="gold-divider"></div>
+      <div class="stu-row" id="stu-tabs"></div>
+      <button class="add-stu" id="add-stu-btn" title="Add student">+</button>
+    </div>
   </div>
 
   <!-- MAIN -->
-  <div class="main" id="main">
-    <div id="no-student" class="empty">
-      <div class="empty-icon">👤</div>
-      <div class="empty-title">No students yet</div>
-      <div class="empty-sub">Click the + button above to add your first student.</div>
+  <div class="main" id="main-area">
+    <!-- No student state -->
+    <div id="no-stu" class="content" style="display:flex;align-items:center;justify-content:center">
+      <div class="empty">
+        <div class="empty-icon">◆</div>
+        <div class="empty-title">No students yet</div>
+        <div class="empty-sub">Click <strong>+</strong> above to add your first student.</div>
+      </div>
     </div>
 
-    <div id="student-view" class="hid">
-      <!-- Upload bar -->
-      <div class="upload-bar">
-        <div class="upload-zone" id="upload-zone">
-          <div class="upload-icon">📄</div>
-          <div class="upload-text"><strong>Drop PDFs here</strong> or click to upload — multiple files supported</div>
-          <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple>
+    <!-- Student view -->
+    <div id="stu-view" class="hid" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="upload-btn" id="upload-btn">
+            <span style="font-size:15px">+</span> Add Documents
+            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer">
+          </button>
+          <span class="doc-count" id="doc-count"></span>
         </div>
-        <button class="btn-expand" id="toggle-all">Expand All</button>
+        <div class="toolbar-right">
+          <button class="view-btn on" data-view="accordion" onclick="setView('accordion')">☰ List</button>
+          <button class="view-btn" data-view="gallery" onclick="setView('gallery')">⊞ Gallery</button>
+        </div>
       </div>
 
-      <!-- Documents -->
-      <div class="doc-grid" id="doc-grid"></div>
+      <div class="content" id="content-area">
+        <div id="no-docs" class="empty">
+          <div class="empty-icon">◇</div>
+          <div class="empty-title">No documents yet</div>
+          <div class="empty-sub">Upload PDFs from this student's Drive folder. Documents are auto-titled from their content.</div>
+        </div>
+        <div id="accordion-view"></div>
+        <div id="gallery-view" class="gallery hid"></div>
+      </div>
 
-      <div id="no-docs" class="empty" style="padding:40px 20px">
-        <div class="empty-icon">📁</div>
-        <div class="empty-title">No documents yet</div>
-        <div class="empty-sub">Upload PDFs from this student's Drive folder. The system will auto-title them based on content.</div>
+      <!-- Notes -->
+      <div class="notes-section">
+        <div class="notes-label">
+          <span style="color:var(--gold)">◆</span> Counselor Notes
+        </div>
+        <textarea id="notes-ta" class="notes-ta" placeholder="Key themes, reminders, narrative ideas..." rows="2"></textarea>
       </div>
     </div>
   </div>
@@ -154,33 +262,33 @@ button,input,select{font-family:var(--fb)}
   <div class="modal-bx">
     <h3>Add Student</h3>
     <input id="add-name" placeholder="LastName, FirstName">
-    <div class="actions">
-      <button class="btn-s" onclick="hideAddModal()">Cancel</button>
-      <button class="btn-p" id="add-go" onclick="addStudent()" disabled>Add</button>
+    <div class="modal-actions">
+      <button class="btn-o" onclick="hideAdd()">Cancel</button>
+      <button class="btn-r" id="add-go" onclick="addStu()" disabled>Add Student</button>
     </div>
   </div>
 </div>
 
-<!-- Delete Confirm Modal -->
+<!-- Delete Doc Modal -->
 <div id="del-modal" class="modal-ov hid">
   <div class="modal-bx">
     <h3>Remove Document</h3>
     <div class="confirm-msg" id="del-msg"></div>
-    <div class="actions">
-      <button class="btn-s" onclick="hideDelModal()">Cancel</button>
-      <button class="btn-p" style="background:var(--red)" onclick="confirmDel()">Remove</button>
+    <div class="modal-actions">
+      <button class="btn-o" onclick="hideDel()">Cancel</button>
+      <button class="btn-r" onclick="confirmDel()">Remove</button>
     </div>
   </div>
 </div>
 
-<!-- Delete Student Confirm -->
+<!-- Delete Student Modal -->
 <div id="del-stu-modal" class="modal-ov hid">
   <div class="modal-bx">
     <h3>Remove Student</h3>
     <div class="confirm-msg" id="del-stu-msg"></div>
-    <div class="actions">
-      <button class="btn-s" onclick="hideDelStuModal()">Cancel</button>
-      <button class="btn-p" style="background:var(--red)" onclick="confirmDelStu()">Remove</button>
+    <div class="modal-actions">
+      <button class="btn-o" onclick="hideDelStu()">Cancel</button>
+      <button class="btn-r" onclick="confirmDelStu()">Remove</button>
     </div>
   </div>
 </div>
@@ -188,476 +296,361 @@ button,input,select{font-family:var(--fb)}
 <div id="toast" class="toast"></div>
 
 <script>
-// ── pdf.js config ──
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// ══════════════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════════════
-let students = []; // [{id, name, docs:[{id,title,type,mode,pdfData?,content?,fileName?}]}]
-let curStu = null; // student id
-let openDocs = {}; // docId -> bool
-let delTarget = null; // doc id pending delete
-let delStuTarget = null; // student id pending delete
+// ══════════════ STATE ══════════════
+let students=[], curStu=null, openDocs={}, curView='accordion';
+let delTarget=null, delStuTarget=null, editingTitle=null;
 
-// ══════════════════════════════════════════════════════════════════
-// AUTO-TITLING ENGINE
-// ══════════════════════════════════════════════════════════════════
-// Extracts a clean, consistent title from a PDF filename + first-page text.
+const DT={
+  transcript:{l:'Transcript',c:'var(--red)',bg:'#ba0c2f15'},
+  report:{l:'Report',c:'var(--dk-red)',bg:'#8c122a15'},
+  comments:{l:'Comments',c:'var(--gold)',bg:'#b38d4215'},
+  survey:{l:'Survey',c:'#2d7d46',bg:'#2d7d4615'},
+  parent:{l:'Parent',c:'var(--gray)',bg:'#43434315'},
+  teacher:{l:'Teacher Rec',c:'var(--red)',bg:'#ba0c2f15'},
+  counselor:{l:'Counselor',c:'var(--gold)',bg:'#b38d4215'},
+  other:{l:'Document',c:'var(--gray)',bg:'#43434315'},
+};
 
-const DOC_PATTERNS = [
-  // Transcripts
-  { match: /transcript/i, type:'transcript', title: 'Transcript' },
-  // Progress reports / report cards — seasonal + term timing
-  { match: /fall.*(interim|progress|mid)/i, type:'report', title:'Fall Interim Report' },
-  { match: /(interim|progress|mid).*fall/i, type:'report', title:'Fall Interim Report' },
-  { match: /fall.*(term|end|final|report)/i, type:'report', title:'Fall Term Report' },
-  { match: /(term|end|final).*fall/i, type:'report', title:'Fall Term Report' },
-  { match: /winter.*(interim|progress|mid)/i, type:'report', title:'Winter Interim Report' },
-  { match: /(interim|progress|mid).*winter/i, type:'report', title:'Winter Interim Report' },
-  { match: /winter.*(term|end|final|report)/i, type:'report', title:'Winter Term Report' },
-  { match: /(term|end|final).*winter/i, type:'report', title:'Winter Term Report' },
-  { match: /spring.*(interim|progress|mid)/i, type:'report', title:'Spring Interim Report' },
-  { match: /(interim|progress|mid).*spring/i, type:'report', title:'Spring Interim Report' },
-  { match: /spring.*(term|end|final|report)/i, type:'report', title:'Spring Term Report' },
-  { match: /(term|end|final).*spring/i, type:'report', title:'Spring Term Report' },
-  // Generic interim/progress if season not detected
-  { match: /interim|progress.report|mid.term/i, type:'report', title:'Interim Report' },
-  { match: /report.card|term.report|end.of.term/i, type:'report', title:'Term Report' },
-  // Comments
-  { match: /comment/i, type:'comments', title:'Academic Comments' },
-  { match: /advisor|advisory/i, type:'comments', title:'Advisor Comments' },
-  { match: /dorm|house|resident/i, type:'comments', title:'House Comments' },
-  // Surveys
-  { match: /college.research.*0|cr.?0/i, type:'survey', title:'College Research Survey #0' },
-  { match: /college.research.*1|cr.?1/i, type:'survey', title:'College Research Survey #1' },
-  { match: /college.research.*2|cr.?2/i, type:'survey', title:'College Research Survey #2' },
-  { match: /college.research.*3|cr.?3/i, type:'survey', title:'College Research Survey #3' },
-  { match: /college.list|working.list/i, type:'survey', title:'Working College List' },
-  { match: /survey|questionnaire|self.report/i, type:'survey', title:'Student Survey' },
-  // Parent
-  { match: /parent/i, type:'parent', title:'Parent Questionnaire' },
-  // Teacher recs
-  { match: /teacher.rec|recommendation/i, type:'teacher', title:'Teacher Recommendation' },
-  // Counselor
-  { match: /counselor|june.letter|strategy/i, type:'counselor', title:'Counselor Letter' },
-];
+// ══════════════ AUTO-TITLE (from first page text) ══════════════
+function autoTitle(fileName, fpText){
+  const txt = (fpText||'').replace(/\s+/g,' ');
+  const fn = fileName.replace(/[_\-]+/g,' ');
+  const combined = txt + ' ' + fn;
 
-// Year patterns
-const YEAR_RE = /20\d{2}[-–]\d{2,4}|20\d{2}/;
+  // Try to extract title directly from PDF text first
+  // Look for known Lawrenceville report headers
+  const directPatterns = [
+    {re:/Winter\s+Interim\s+Report/i, title:'Winter Interim Report', type:'report'},
+    {re:/Fall\s+Interim\s+Report/i, title:'Fall Interim Report', type:'report'},
+    {re:/Spring\s+Interim\s+Report/i, title:'Spring Interim Report', type:'report'},
+    {re:/Winter\s+Term[\s\-]*End\s+(Report|Comment)/i, title:'Winter Term End Comments', type:'comments'},
+    {re:/Fall\s+Term[\s\-]*End\s+(Report|Comment)/i, title:'Fall Term End Comments', type:'comments'},
+    {re:/Spring\s+Term[\s\-]*End\s+(Report|Comment)/i, title:'Spring Term End Comments', type:'comments'},
+    {re:/Winter\s+Term\s+Report/i, title:'Winter Term Report', type:'report'},
+    {re:/Fall\s+Term\s+Report/i, title:'Fall Term Report', type:'report'},
+    {re:/Spring\s+Term\s+Report/i, title:'Spring Term Report', type:'report'},
+    {re:/End[\s\-]*of[\s\-]*Term\s+Comment/i, title:'Term End Comments', type:'comments'},
+    {re:/Progress\s+Report.*Winter/i, title:'Winter Progress Report', type:'report'},
+    {re:/Progress\s+Report.*Fall/i, title:'Fall Progress Report', type:'report'},
+    {re:/Progress\s+Report.*Spring/i, title:'Spring Progress Report', type:'report'},
+    {re:/Transcript/i, title:'Transcript', type:'transcript'},
+    {re:/College\s+Research\s+Survey?\s*#?\s*0/i, title:'College Research Survey #0', type:'survey'},
+    {re:/College\s+Research\s+Survey?\s*#?\s*1/i, title:'College Research Survey #1', type:'survey'},
+    {re:/College\s+Research\s+Survey?\s*#?\s*2/i, title:'College Research Survey #2', type:'survey'},
+    {re:/College\s+Research\s+Survey?\s*#?\s*3/i, title:'College Research Survey #3', type:'survey'},
+    {re:/Working\s+College\s+List/i, title:'Working College List', type:'survey'},
+    {re:/Parent\s+(Questionnaire|Survey|Brag)/i, title:'Parent Questionnaire', type:'parent'},
+    {re:/Teacher\s+Rec/i, title:'Teacher Recommendation', type:'teacher'},
+    {re:/Advisor\s+Comment/i, title:'Advisor Comments', type:'comments'},
+    {re:/Dorm(itory)?\s+Comment|House\s+(Comment|Report)/i, title:'House Comments', type:'comments'},
+  ];
 
-function autoTitle(fileName, firstPageText) {
-  const combined = (fileName + ' ' + (firstPageText || '')).replace(/[_\-\.]/g, ' ');
-
-  // Find best matching pattern
-  let bestTitle = null;
-  let bestType = 'other';
-
-  // Try firstPageText first (more reliable), then filename
-  for (const src of [firstPageText || '', fileName]) {
-    const clean = src.replace(/[_\-\.]/g, ' ');
-    for (const pat of DOC_PATTERNS) {
-      if (pat.match.test(clean)) {
-        bestTitle = pat.title;
-        bestType = pat.type;
-        break;
+  // Check PDF text first (most reliable), then filename
+  for(const src of [txt, fn]){
+    for(const p of directPatterns){
+      if(p.re.test(src)){
+        const yearMatch = combined.match(/20\d{2}[\-–](?:\d{2}|\d{4})/);
+        const year = yearMatch ? ', '+yearMatch[0] : '';
+        return {title: p.title+year, type: p.type};
       }
     }
-    if (bestTitle) break;
   }
 
-  // Extract year
-  const yearMatch = combined.match(YEAR_RE);
-  const year = yearMatch ? yearMatch[0] : '';
-
-  // If we got a specific title from patterns
-  if (bestTitle) {
-    return { title: bestTitle + (year ? ', ' + year : ''), type: bestType };
-  }
-
-  // Fallback: clean up filename
-  const cleaned = fileName
-    .replace(/\.[^.]+$/, '')           // remove extension
-    .replace(/[_\-]+/g, ' ')          // underscores/hyphens to spaces
-    .replace(/\b\w/g, c => c.toUpperCase()) // title case
-    .trim();
-
-  return { title: cleaned, type: 'other' };
+  // Fallback: clean filename
+  const cleaned = fileName.replace(/\.[^.]+$/,'').replace(/[_\-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).trim();
+  return {title:cleaned, type:'other'};
 }
 
-// Extract student name from filename if possible
-function extractStudentName(fileName) {
-  const clean = fileName.replace(/\.[^.]+$/, '').replace(/[_\-]+/g, ' ');
-  // Common patterns: "lastname_firstname_...", "firstname-lastname-..."
-  // Try to detect name-like segments at the start
-  const parts = clean.split(/\s+/);
-  if (parts.length >= 2) {
-    // Check if first two parts look like a name (no numbers, short-ish)
-    const a = parts[0], b = parts[1];
-    if (a.length > 1 && b.length > 1 && !/\d/.test(a) && !/\d/.test(b)) {
-      // Could be "LastName FirstName" or "FirstName LastName"
-      return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase() + ' ' +
-             b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
-    }
-  }
-  return null;
-}
-
-// ══════════════════════════════════════════════════════════════════
-// DOC TYPE COLORS
-// ══════════════════════════════════════════════════════════════════
-const TYPE_COLORS = {
-  transcript: '#5193c7',
-  report: '#cf7352',
-  comments: '#d4a843',
-  survey: '#5faa63',
-  parent: '#9b7dbf',
-  teacher: '#cf7352',
-  counselor: '#d47da0',
-  other: '#8a8a9a',
-};
-const TYPE_LABELS = {
-  transcript:'Transcript', report:'Report', comments:'Comments',
-  survey:'Survey', parent:'Parent', teacher:'Teacher Rec',
-  counselor:'Counselor', other:'Document',
-};
-
-// ══════════════════════════════════════════════════════════════════
-// STUDENT MANAGEMENT
-// ══════════════════════════════════════════════════════════════════
-document.getElementById('add-stu-btn').addEventListener('click', showAddModal);
-
-function showAddModal() {
-  document.getElementById('add-modal').classList.remove('hid');
-  const inp = document.getElementById('add-name');
-  inp.value = '';
-  inp.focus();
-  document.getElementById('add-go').disabled = true;
-}
-function hideAddModal() { document.getElementById('add-modal').classList.add('hid'); }
-
-document.getElementById('add-name').addEventListener('input', e => {
-  document.getElementById('add-go').disabled = !e.target.value.trim();
-});
-document.getElementById('add-name').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.target.value.trim()) addStudent();
-});
-
-function addStudent() {
-  const name = document.getElementById('add-name').value.trim();
-  if (!name) return;
-  const id = 's_' + Date.now();
-  students.push({ id, name, docs: [] });
-  curStu = id;
-  hideAddModal();
-  render();
-  save();
-}
-
-function selectStudent(id) {
-  curStu = id;
-  render();
-}
-
-function showDelStuModal(id) {
-  const stu = students.find(s => s.id === id);
-  if (!stu) return;
-  delStuTarget = id;
-  document.getElementById('del-stu-msg').textContent =
-    `Remove "${stu.name}" and all their documents? This can't be undone.`;
-  document.getElementById('del-stu-modal').classList.remove('hid');
-}
-function hideDelStuModal() { document.getElementById('del-stu-modal').classList.add('hid'); delStuTarget = null; }
-function confirmDelStu() {
-  if (!delStuTarget) return;
-  students = students.filter(s => s.id !== delStuTarget);
-  if (curStu === delStuTarget) curStu = students.length > 0 ? students[0].id : null;
-  hideDelStuModal();
-  render();
-  save();
-  toast('Student removed');
-}
-
-// ══════════════════════════════════════════════════════════════════
-// DOCUMENT MANAGEMENT
-// ══════════════════════════════════════════════════════════════════
-function showDelModal(docId) {
-  const stu = students.find(s => s.id === curStu);
-  const doc = stu?.docs.find(d => d.id === docId);
-  if (!doc) return;
-  delTarget = docId;
-  document.getElementById('del-msg').textContent =
-    `Remove "${doc.title}" from ${stu.name}?`;
-  document.getElementById('del-modal').classList.remove('hid');
-}
-function hideDelModal() { document.getElementById('del-modal').classList.add('hid'); delTarget = null; }
-function confirmDel() {
-  if (!delTarget) return;
-  const stu = students.find(s => s.id === curStu);
-  if (stu) stu.docs = stu.docs.filter(d => d.id !== delTarget);
-  delete openDocs[delTarget];
-  hideDelModal();
-  render();
-  save();
-  toast('Document removed');
-}
-
-// File upload handler
-document.getElementById('file-input').addEventListener('change', async e => {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
-  const stu = students.find(s => s.id === curStu);
-  if (!stu) return;
-
-  for (const file of files) {
-    const ext = file.name.split('.').pop().toLowerCase();
-    const id = 'doc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-
-    if (ext === 'pdf') {
-      const arrayBuf = await file.arrayBuffer();
-      // Extract first page text for auto-titling
-      let firstPageText = '';
-      try {
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuf.slice(0) }).promise;
-        const page = await pdf.getPage(1);
-        const tc = await page.getTextContent();
-        firstPageText = tc.items.map(i => i.str).join(' ');
-      } catch {}
-
-      const { title, type } = autoTitle(file.name, firstPageText);
-      stu.docs.push({ id, title, type, mode: 'pdf', pdfData: arrayBuf, fileName: file.name });
-      openDocs[id] = false;
-    } else {
-      const content = await file.text();
-      const { title, type } = autoTitle(file.name, content.slice(0, 500));
-      stu.docs.push({ id, title, type, mode: 'text', content, fileName: file.name });
-      openDocs[id] = false;
-    }
-  }
-
-  // Reset file input so same files can be re-uploaded
-  e.target.value = '';
-  render();
-  save();
-  toast(files.length === 1 ? 'Document added' : files.length + ' documents added');
-});
-
-// ══════════════════════════════════════════════════════════════════
-// PDF RENDERING
-// ══════════════════════════════════════════════════════════════════
-async function renderPdf(container, pdfData) {
-  container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--t4)"><span class="dots"><span></span><span></span><span></span></span> Rendering...</div>';
-  try {
-    const dataCopy = pdfData.slice(0);
-    const pdf = await pdfjsLib.getDocument({ data: dataCopy }).promise;
-    container.innerHTML = '';
-    const scale = 1.5;
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const vp = page.getViewport({ scale });
-      const canvas = document.createElement('canvas');
-      canvas.width = vp.width;
-      canvas.height = vp.height;
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+// ══════════════ PDF RENDER ══════════════
+async function renderPdf(container, pdfData, scale){
+  scale = scale || 1.5;
+  container.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray)"><span class="dots"><span></span><span></span><span></span></span> Rendering...</div>';
+  try{
+    const pdf = await pdfjsLib.getDocument({data:pdfData.slice(0)}).promise;
+    container.innerHTML='';
+    for(let i=1;i<=pdf.numPages;i++){
+      const page=await pdf.getPage(i);
+      const vp=page.getViewport({scale});
+      const canvas=document.createElement('canvas');
+      canvas.width=vp.width; canvas.height=vp.height;
+      await page.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise;
       container.appendChild(canvas);
     }
-  } catch (err) {
-    console.error('PDF render error:', err);
-    container.innerHTML = '<div style="padding:20px;color:#991b1b;font-size:13px">Could not render this PDF.</div>';
+  }catch(e){
+    console.error('PDF error:',e);
+    container.innerHTML='<div style="padding:20px;color:var(--red);font-size:13px">Could not render this PDF.</div>';
   }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// RENDER
-// ══════════════════════════════════════════════════════════════════
-function render() {
+async function extractFirstPageText(arrayBuf){
+  try{
+    const pdf=await pdfjsLib.getDocument({data:arrayBuf.slice(0)}).promise;
+    const page=await pdf.getPage(1);
+    const tc=await page.getTextContent();
+    return tc.items.map(i=>i.str).join(' ');
+  }catch{return '';}
+}
+
+// ══════════════ STUDENT MGMT ══════════════
+document.getElementById('add-stu-btn').addEventListener('click',()=>{
+  document.getElementById('add-modal').classList.remove('hid');
+  const inp=document.getElementById('add-name'); inp.value=''; inp.focus();
+  document.getElementById('add-go').disabled=true;
+});
+function hideAdd(){document.getElementById('add-modal').classList.add('hid')}
+document.getElementById('add-name').addEventListener('input',e=>{document.getElementById('add-go').disabled=!e.target.value.trim()});
+document.getElementById('add-name').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim())addStu()});
+
+function addStu(){
+  const name=document.getElementById('add-name').value.trim();
+  if(!name)return;
+  const id='s_'+Date.now();
+  students.push({id,name,docs:[],notes:''});
+  curStu=id; hideAdd(); render(); save();
+}
+function selStu(id){curStu=id;render()}
+function showDelStu(id){
+  const s=students.find(x=>x.id===id);if(!s)return;
+  delStuTarget=id;
+  document.getElementById('del-stu-msg').textContent='Remove "'+s.name+'" and all their documents?';
+  document.getElementById('del-stu-modal').classList.remove('hid');
+}
+function hideDelStu(){document.getElementById('del-stu-modal').classList.add('hid');delStuTarget=null}
+function confirmDelStu(){
+  if(!delStuTarget)return;
+  students=students.filter(s=>s.id!==delStuTarget);
+  if(curStu===delStuTarget)curStu=students.length?students[0].id:null;
+  hideDelStu();render();save();toast('Student removed');
+}
+
+// ══════════════ DOC MGMT ══════════════
+function showDel(docId){
+  const stu=students.find(s=>s.id===curStu);
+  const doc=stu?.docs.find(d=>d.id===docId);if(!doc)return;
+  delTarget=docId;
+  document.getElementById('del-msg').textContent='Remove "'+doc.title+'"?';
+  document.getElementById('del-modal').classList.remove('hid');
+}
+function hideDel(){document.getElementById('del-modal').classList.add('hid');delTarget=null}
+function confirmDel(){
+  if(!delTarget)return;
+  const stu=students.find(s=>s.id===curStu);
+  if(stu)stu.docs=stu.docs.filter(d=>d.id!==delTarget);
+  delete openDocs[delTarget]; hideDel();render();save();toast('Document removed');
+}
+
+function renameDoc(docId,newTitle){
+  const stu=students.find(s=>s.id===curStu);
+  const doc=stu?.docs.find(d=>d.id===docId);
+  if(doc&&newTitle.trim())doc.title=newTitle.trim();
+  editingTitle=null; render(); save();
+}
+
+// File upload
+document.getElementById('file-input').addEventListener('change',async e=>{
+  const files=Array.from(e.target.files||[]);if(!files.length)return;
+  const stu=students.find(s=>s.id===curStu);if(!stu)return;
+
+  for(const file of files){
+    const ext=file.name.split('.').pop().toLowerCase();
+    const id='doc_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    if(ext==='pdf'){
+      const buf=await file.arrayBuffer();
+      const fpText=await extractFirstPageText(buf);
+      const {title,type}=autoTitle(file.name,fpText);
+      stu.docs.push({id,title,type,mode:'pdf',pdfData:buf,fileName:file.name});
+    }else{
+      const content=await file.text();
+      const {title,type}=autoTitle(file.name,content.slice(0,500));
+      stu.docs.push({id,title,type,mode:'text',content,fileName:file.name});
+    }
+  }
+  e.target.value='';render();save();
+  toast(files.length===1?'Document added':files.length+' documents added');
+});
+
+// ══════════════ VIEW MODE ══════════════
+function setView(v){
+  curView=v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  render();
+}
+
+// ══════════════ NOTES ══════════════
+document.getElementById('notes-ta').addEventListener('input',e=>{
+  const stu=students.find(s=>s.id===curStu);
+  if(stu)stu.notes=e.target.value;
+  save();
+});
+
+// ══════════════ RENDER ══════════════
+function render(){
   renderTabs();
-  renderMain();
-}
-
-function renderTabs() {
-  const container = document.getElementById('stu-tabs');
-  container.innerHTML = '';
-  students.forEach(s => {
-    const tab = document.createElement('button');
-    tab.className = 'stu-tab' + (s.id === curStu ? ' on' : '');
-    tab.innerHTML = esc(s.name) +
-      `<span class="x" title="Remove student" onclick="event.stopPropagation();showDelStuModal('${s.id}')">✕</span>`;
-    tab.addEventListener('click', () => selectStudent(s.id));
-    container.appendChild(tab);
-  });
-}
-
-function renderMain() {
-  const noStu = document.getElementById('no-student');
-  const view = document.getElementById('student-view');
-
-  if (!curStu || !students.find(s => s.id === curStu)) {
-    noStu.classList.remove('hid');
-    view.classList.add('hid');
-    return;
+  const noStu=document.getElementById('no-stu');
+  const stuView=document.getElementById('stu-view');
+  if(!curStu||!students.find(s=>s.id===curStu)){
+    noStu.style.display='flex';stuView.classList.add('hid');return;
   }
-  noStu.classList.add('hid');
-  view.classList.remove('hid');
+  noStu.style.display='none';stuView.classList.remove('hid');stuView.style.display='flex';
+  const stu=students.find(s=>s.id===curStu);
+  document.getElementById('doc-count').textContent=stu.docs.length+' document'+(stu.docs.length!==1?'s':'');
+  document.getElementById('notes-ta').value=stu.notes||'';
 
-  const stu = students.find(s => s.id === curStu);
-  const grid = document.getElementById('doc-grid');
-  const noDocs = document.getElementById('no-docs');
+  const noDocs=document.getElementById('no-docs');
+  const accView=document.getElementById('accordion-view');
+  const galView=document.getElementById('gallery-view');
 
-  // Clear old cards
-  grid.querySelectorAll('.dc').forEach(el => el.remove());
-
-  if (stu.docs.length === 0) {
-    noDocs.classList.remove('hid');
-    document.getElementById('toggle-all').classList.add('hid');
-    return;
+  if(stu.docs.length===0){
+    noDocs.classList.remove('hid');accView.classList.add('hid');galView.classList.add('hid');return;
   }
   noDocs.classList.add('hid');
-  document.getElementById('toggle-all').classList.remove('hid');
 
-  // Sort: group by type, then alphabetical within type
-  const typeOrder = ['transcript','report','comments','survey','parent','teacher','counselor','other'];
-  const sorted = [...stu.docs].sort((a, b) => {
-    const ai = typeOrder.indexOf(a.type), bi = typeOrder.indexOf(b.type);
-    if (ai !== bi) return ai - bi;
-    return a.title.localeCompare(b.title);
+  if(curView==='accordion'){
+    accView.classList.remove('hid');galView.classList.add('hid');
+    renderAccordion(stu);
+  }else{
+    accView.classList.add('hid');galView.classList.remove('hid');
+    renderGallery(stu);
+  }
+}
+
+function renderTabs(){
+  const c=document.getElementById('stu-tabs');c.innerHTML='';
+  students.forEach(s=>{
+    const t=document.createElement('button');
+    t.className='stu-tab'+(s.id===curStu?' on':'');
+    t.innerHTML=esc(s.name)+'<span class="x" title="Remove" onclick="event.stopPropagation();showDelStu(\''+s.id+'\')">✕</span>';
+    t.addEventListener('click',()=>selStu(s.id));
+    c.appendChild(t);
   });
+}
 
-  sorted.forEach(doc => {
-    const open = !!openDocs[doc.id];
-    const color = TYPE_COLORS[doc.type] || TYPE_COLORS.other;
-    const label = TYPE_LABELS[doc.type] || 'Document';
+function renderAccordion(stu){
+  const container=document.getElementById('accordion-view');
+  container.innerHTML='';
+  stu.docs.forEach((doc,idx)=>{
+    const dt=DT[doc.type]||DT.other;
+    const open=!!openDocs[doc.id];
+    const card=document.createElement('div');
+    card.className='dc'+(open?' open':'');
+    card.draggable=true;
+    card.dataset.idx=idx;
+    card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',idx);card.style.opacity='.4'});
+    card.addEventListener('dragend',()=>{card.style.opacity='1'});
+    card.addEventListener('dragover',e=>{e.preventDefault();card.style.borderTop='2px solid var(--gold)'});
+    card.addEventListener('dragleave',()=>{card.style.borderTop=''});
+    card.addEventListener('drop',e=>{
+      e.preventDefault();card.style.borderTop='';
+      const from=parseInt(e.dataTransfer.getData('text/plain'));
+      const to=idx;if(from===to)return;
+      const [moved]=stu.docs.splice(from,1);stu.docs.splice(to,0,moved);
+      render();save();
+    });
 
-    const card = document.createElement('div');
-    card.className = 'dc' + (open ? ' open' : '');
-
-    const hdr = document.createElement('div');
-    hdr.className = 'dc-h';
-    hdr.innerHTML = `
-      <span class="dc-chev">${open ? '▾' : '▸'}</span>
-      <span class="dc-badge" style="background:${color}18;color:${color}">${esc(label)}</span>
-      <span class="dc-title" title="${esc(doc.title)}">${esc(doc.title)}</span>
-      <span class="dc-meta">${doc.fileName ? esc(doc.fileName) : ''}</span>
-      <button class="dc-del" onclick="event.stopPropagation();showDelModal('${doc.id}')">Remove</button>
+    const hdr=document.createElement('div');
+    hdr.className='dc-h';
+    const isEditing=editingTitle===doc.id;
+    hdr.innerHTML=`
+      <span class="dc-chev">${open?'▾':'▸'}</span>
+      <span class="dc-badge" style="background:${dt.bg};color:${dt.c}">${dt.l}</span>
+      ${isEditing?
+        `<input class="dc-title-input" id="title-edit-${doc.id}" value="${esc(doc.title)}" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter'){renameDoc('${doc.id}',this.value);event.stopPropagation()}" onblur="renameDoc('${doc.id}',this.value)">`
+        :`<span class="dc-title" title="${esc(doc.title)}">${esc(doc.title)}</span>`
+      }
+      <span class="dc-meta">${doc.fileName?esc(doc.fileName):''}</span>
+      <span class="dc-actions">
+        <button class="dc-act-btn" onclick="event.stopPropagation();editingTitle='${doc.id}';render();setTimeout(()=>document.getElementById('title-edit-${doc.id}')?.select(),50)" title="Rename">✎</button>
+        <button class="dc-act-btn del" onclick="event.stopPropagation();showDel('${doc.id}')" title="Remove">✕</button>
+      </span>
     `;
-    hdr.style.cursor = 'pointer';
-    hdr.addEventListener('click', () => { openDocs[doc.id] = !openDocs[doc.id]; render(); });
+    if(!isEditing){
+      hdr.style.cursor='pointer';
+      hdr.addEventListener('click',()=>{openDocs[doc.id]=!openDocs[doc.id];render()});
+    }
     card.appendChild(hdr);
 
-    if (open) {
-      const body = document.createElement('div');
-      body.className = 'dc-body';
-      if (doc.mode === 'pdf' && doc.pdfData) {
-        const pages = document.createElement('div');
-        pages.className = 'pdf-pages';
+    if(open){
+      const rule=document.createElement('div');rule.className='gold-rule';card.appendChild(rule);
+      const body=document.createElement('div');body.className='dc-body';
+      if(doc.mode==='pdf'&&doc.pdfData){
+        const pages=document.createElement('div');pages.className='pdf-pages';
         body.appendChild(pages);
-        setTimeout(() => renderPdf(pages, doc.pdfData), 0);
-      } else if (doc.mode === 'text' && doc.content) {
-        const div = document.createElement('div');
-        div.className = 'text-content';
-        div.textContent = doc.content;
+        setTimeout(()=>renderPdf(pages,doc.pdfData),0);
+      }else if(doc.mode==='text'&&doc.content){
+        const div=document.createElement('div');div.className='text-content';div.textContent=doc.content;
         body.appendChild(div);
       }
       card.appendChild(body);
     }
-    grid.appendChild(card);
+    container.appendChild(card);
   });
-
-  // Toggle all button
-  const allOpen = stu.docs.every(d => openDocs[d.id]);
-  document.getElementById('toggle-all').textContent = allOpen ? 'Collapse All' : 'Expand All';
 }
 
-document.getElementById('toggle-all').addEventListener('click', () => {
-  const stu = students.find(s => s.id === curStu);
-  if (!stu) return;
-  const allOpen = stu.docs.every(d => openDocs[d.id]);
-  stu.docs.forEach(d => { openDocs[d.id] = !allOpen; });
-  render();
-});
-
-// ══════════════════════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════════════════════
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2000);
+function renderGallery(stu){
+  const container=document.getElementById('gallery-view');
+  container.innerHTML='';
+  stu.docs.forEach(doc=>{
+    const dt=DT[doc.type]||DT.other;
+    const card=document.createElement('div');card.className='gal-card';
+    card.innerHTML=`
+      <div class="gal-card-header">
+        <span class="gal-card-badge" style="background:${dt.bg};color:${dt.c}">${dt.l}</span>
+        <span class="gal-card-title" title="${esc(doc.title)}">${esc(doc.title)}</span>
+      </div>
+    `;
+    const body=document.createElement('div');body.className='gal-card-body';
+    if(doc.mode==='pdf'&&doc.pdfData){
+      setTimeout(()=>renderPdf(body,doc.pdfData,1.2),0);
+    }else if(doc.mode==='text'&&doc.content){
+      const div=document.createElement('div');
+      div.style.cssText='padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;background:var(--white)';
+      div.textContent=doc.content;body.appendChild(div);
+    }
+    card.appendChild(body);
+    const actions=document.createElement('div');actions.className='gal-card-actions';
+    actions.innerHTML=`
+      <button class="dc-act-btn" onclick="editingTitle='${doc.id}';setView('accordion');openDocs['${doc.id}']=true" title="Rename">✎ Rename</button>
+      <button class="dc-act-btn del" onclick="showDel('${doc.id}')" title="Remove">✕ Remove</button>
+    `;
+    card.appendChild(actions);
+    container.appendChild(card);
+  });
 }
 
-// ══════════════════════════════════════════════════════════════════
-// PERSISTENCE
-// ══════════════════════════════════════════════════════════════════
-function ab2b64(buf) {
-  const bytes = new Uint8Array(buf);
-  let bin = '';
-  // Process in chunks to avoid call stack overflow
-  const chunk = 8192;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-  }
-  return btoa(bin);
-}
-function b642ab(b64) {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes.buffer;
-}
+// ══════════════ UTILS ══════════════
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2500)}
 
-function save() {
-  try {
-    const data = {
-      students: students.map(s => ({
-        ...s,
-        docs: s.docs.map(d => {
-          if (d.mode === 'pdf' && d.pdfData) {
-            return { ...d, pdfB64: ab2b64(d.pdfData), pdfData: undefined };
-          }
-          return { ...d, pdfData: undefined };
-        })
-      })),
-      curStu,
-      openDocs,
-    };
-    localStorage.setItem('recos5', JSON.stringify(data));
-  } catch (e) {
-    console.warn('Save failed:', e.message);
-  }
-}
+// ══════════════ PERSISTENCE ══════════════
+function ab2b64(buf){const bytes=new Uint8Array(buf);let b='';const ch=8192;for(let i=0;i<bytes.length;i+=ch)b+=String.fromCharCode.apply(null,bytes.subarray(i,i+ch));return btoa(b)}
+function b642ab(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return bytes.buffer}
 
-function load() {
-  try {
-    const raw = localStorage.getItem('recos5');
-    if (!raw) return false;
-    const data = JSON.parse(raw);
-    students = data.students || [];
-    curStu = data.curStu || null;
-    openDocs = data.openDocs || {};
-    // Restore ArrayBuffers
-    students.forEach(s => {
-      s.docs.forEach(d => {
-        if (d.mode === 'pdf' && d.pdfB64) {
-          d.pdfData = b642ab(d.pdfB64);
-          delete d.pdfB64;
-        }
-      });
-    });
-    return students.length > 0;
-  } catch { return false; }
+function save(){
+  try{
+    const data={students:students.map(s=>({...s,docs:s.docs.map(d=>{
+      if(d.mode==='pdf'&&d.pdfData)return{...d,pdfB64:ab2b64(d.pdfData),pdfData:undefined};
+      return{...d,pdfData:undefined};
+    })})),curStu,openDocs};
+    localStorage.setItem('recos6',JSON.stringify(data));
+  }catch(e){console.warn('Save failed:',e.message)}
 }
-
-setInterval(save, 10000);
-
-// ══════════════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════════════
-if (load()) {
-  render();
-} else {
-  render();
+function load(){
+  try{
+    const raw=localStorage.getItem('recos6');if(!raw)return false;
+    const data=JSON.parse(raw);
+    students=data.students||[];curStu=data.curStu||null;openDocs=data.openDocs||{};
+    students.forEach(s=>s.docs.forEach(d=>{
+      if(d.mode==='pdf'&&d.pdfB64){d.pdfData=b642ab(d.pdfB64);delete d.pdfB64}
+    }));
+    return students.length>0;
+  }catch{return false}
 }
+setInterval(save,10000);
+
+// ══════════════ INIT ══════════════
+if(load())render(); else render();
 </script>
 </body>
 </html>
