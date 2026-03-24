@@ -133,7 +133,7 @@ button,input,select,textarea{font-family:var(--font-b)}
 .gallery{display:flex;gap:16px;overflow-x:auto;padding:16px 0;height:100%}
 .gallery::-webkit-scrollbar{height:8px}
 .gal-card{
-  flex-shrink:0;width:420px;display:flex;flex-direction:column;
+  flex-shrink:0;width:calc(33.33vw - 32px);min-width:480px;display:flex;flex-direction:column;
   border:1px solid var(--border);border-radius:4px;background:var(--white);overflow:hidden;
 }
 .gal-card-header{
@@ -145,6 +145,15 @@ button,input,select,textarea{font-family:var(--font-b)}
 .gal-card-body{flex:1;overflow-y:auto;background:#e8e6e1}
 .gal-card-body canvas{display:block;width:100%;margin-bottom:4px}
 .gal-card-actions{padding:6px 10px;border-top:1px solid var(--border);display:flex;gap:4px;flex-shrink:0;background:var(--lt-gray)}
+
+/* ── Search Results ── */
+.search-results{padding:12px 0}
+.search-result{padding:10px 16px;margin-bottom:6px;border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:4px;background:var(--white);cursor:pointer;transition:border-color .12s}
+.search-result:hover{border-color:var(--gold)}
+.search-result-doc{font-family:var(--font-h);font-size:12px;font-weight:bold;color:var(--red);margin-bottom:4px}
+.search-result-text{font-size:12.5px;color:var(--gray);line-height:1.6}
+.search-result-text mark{background:#b38d4233;color:var(--black);border-radius:2px;padding:0 2px}
+.search-info{font-size:12px;color:var(--gray);padding:8px 0;font-style:italic}
 
 /* ── Empty States ── */
 .empty{padding:60px 20px;text-align:center}
@@ -189,7 +198,7 @@ button,input,select,textarea{font-family:var(--font-b)}
     <div class="topbar-main">
       <div class="logo-area">
         <div class="logo-seal">L</div>
-        <div class="logo-text">RecOS<span>College Counseling</span></div>
+        <div class="logo-text">The Lawrenceville School<span>College Counseling · RecOS</span></div>
       </div>
       <div class="gold-divider"></div>
       <div class="stu-row" id="stu-tabs"></div>
@@ -219,12 +228,17 @@ button,input,select,textarea{font-family:var(--font-b)}
           <span class="doc-count" id="doc-count"></span>
         </div>
         <div class="toolbar-right">
+          <div style="position:relative;display:flex;align-items:center">
+            <input type="text" id="search-input" placeholder="Search all documents..." style="padding:7px 12px 7px 28px;border-radius:4px;border:1px solid var(--border);background:var(--white);color:var(--black);font-size:12px;outline:none;width:200px" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
+            <span style="position:absolute;left:9px;color:var(--gray);font-size:13px;pointer-events:none">⌕</span>
+          </div>
           <button class="view-btn on" data-view="accordion" onclick="setView('accordion')">☰ List</button>
           <button class="view-btn" data-view="gallery" onclick="setView('gallery')">⊞ Gallery</button>
         </div>
       </div>
 
       <div class="content" id="content-area">
+        <div id="search-results" class="search-results hid"></div>
         <div id="no-docs" class="empty">
           <div class="empty-icon">◇</div>
           <div class="empty-title">No documents yet</div>
@@ -294,65 +308,38 @@ const DT={
   other:{l:'Document',c:'var(--gray)',bg:'#43434315'},
 };
 
-// ══════════════ AUTO-TITLE (from first page text) ══════════════
+// ══════════════ AUTO-CATEGORIZE (type from content, title from filename) ══════════════
 function autoTitle(fileName, fpText){
   const txt = (fpText||'').replace(/\s+/g,' ');
   const fn = fileName.replace(/[_\-]+/g,' ');
 
-  // Patterns that match full title phrases including year
-  // Try to grab the full phrase like "Winter Interim Report, 2025-26" directly
-  const fullPatterns = [
-    {re:/Winter\s+Interim\s+Report,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Winter Interim Report, '+m[1],type:'report'})},
-    {re:/Fall\s+Interim\s+Report,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Fall Interim Report, '+m[1],type:'report'})},
-    {re:/Spring\s+Interim\s+Report,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Spring Interim Report, '+m[1],type:'report'})},
-    {re:/Winter\s+Term[\s\-]*End\s+(?:Report|Comment)s?,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Winter Term End Comments, '+m[1],type:'comments'})},
-    {re:/Fall\s+Term[\s\-]*End\s+(?:Report|Comment)s?,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Fall Term End Comments, '+m[1],type:'comments'})},
-    {re:/Spring\s+Term[\s\-]*End\s+(?:Report|Comment)s?,?\s*(20\d{2}[\-–]\d{2,4})/i, make:(m)=>({title:'Spring Term End Comments, '+m[1],type:'comments'})},
-  ];
+  // Clean filename for display title
+  const title = fileName.replace(/\.[^.]+$/,'').replace(/[_\-]+/g,' ').trim();
 
-  // Try full patterns with year on PDF text first
-  for(const p of fullPatterns){
-    const m = txt.match(p.re);
-    if(m) return p.make(m);
-  }
-
-  // Simple patterns (no year capture)
-  const simplePatterns = [
-    {re:/Winter\s+Interim\s+Report/i, title:'Winter Interim Report', type:'report'},
-    {re:/Fall\s+Interim\s+Report/i, title:'Fall Interim Report', type:'report'},
-    {re:/Spring\s+Interim\s+Report/i, title:'Spring Interim Report', type:'report'},
-    {re:/Winter\s+Term[\s\-]*End\s+(Report|Comment)/i, title:'Winter Term End Comments', type:'comments'},
-    {re:/Fall\s+Term[\s\-]*End\s+(Report|Comment)/i, title:'Fall Term End Comments', type:'comments'},
-    {re:/Spring\s+Term[\s\-]*End\s+(Report|Comment)/i, title:'Spring Term End Comments', type:'comments'},
-    {re:/Winter\s+Term\s+Report/i, title:'Winter Term Report', type:'report'},
-    {re:/Fall\s+Term\s+Report/i, title:'Fall Term Report', type:'report'},
-    {re:/Spring\s+Term\s+Report/i, title:'Spring Term Report', type:'report'},
-    {re:/Transcript/i, title:'Transcript', type:'transcript'},
-    {re:/College\s+Research\s+Survey?\s*#?\s*0/i, title:'College Research Survey #0', type:'survey'},
-    {re:/College\s+Research\s+Survey?\s*#?\s*1/i, title:'College Research Survey #1', type:'survey'},
-    {re:/College\s+Research\s+Survey?\s*#?\s*2/i, title:'College Research Survey #2', type:'survey'},
-    {re:/College\s+Research\s+Survey?\s*#?\s*3/i, title:'College Research Survey #3', type:'survey'},
-    {re:/Working\s+College\s+List/i, title:'Working College List', type:'survey'},
-    {re:/Parent\s+(Questionnaire|Survey|Brag)/i, title:'Parent Questionnaire', type:'parent'},
-    {re:/Teacher\s+Rec/i, title:'Teacher Recommendation', type:'teacher'},
-    {re:/Advisor\s+Comment/i, title:'Advisor Comments', type:'comments'},
-    {re:/Dorm(itory)?\s+Comment|House\s+(Comment|Report)/i, title:'House Comments', type:'comments'},
+  // Detect category from PDF text first, then filename
+  const catPatterns = [
+    {re:/Transcript/i, type:'transcript'},
+    {re:/Interim\s+Report/i, type:'report'},
+    {re:/Term[\s\-]*End|End[\s\-]*of[\s\-]*Term/i, type:'comments'},
+    {re:/Term\s+Report|Progress\s+Report/i, type:'report'},
+    {re:/Comment/i, type:'comments'},
+    {re:/College\s+Research|CR\s*#?\s*\d/i, type:'survey'},
+    {re:/College\s+List|Working.*List/i, type:'survey'},
+    {re:/Fourth\s+Form\s+(?:Questionnaire|Survey)|Student\s+Survey|Self[\s\-]*Report/i, type:'survey'},
+    {re:/Parent\s+(Questionnaire|Survey|Brag)/i, type:'parent'},
+    {re:/Teacher\s+Rec|Recommendation/i, type:'teacher'},
+    {re:/Advisor/i, type:'comments'},
+    {re:/Dorm|House\s+(Comment|Report)/i, type:'comments'},
+    {re:/Counselor|June\s+Letter|Strategy/i, type:'counselor'},
   ];
 
   for(const src of [txt, fn]){
-    for(const p of simplePatterns){
-      if(p.re.test(src)){
-        // Try to find a year near the match in the PDF text only
-        const yearMatch = txt.match(/20\d{2}[\-–]\d{2}/);
-        const year = yearMatch ? ', '+yearMatch[0] : '';
-        return {title: p.title+year, type: p.type};
-      }
+    for(const p of catPatterns){
+      if(p.re.test(src)) return {title, type:p.type};
     }
   }
 
-  // Fallback: clean filename
-  const cleaned = fileName.replace(/\.[^.]+$/,'').replace(/[_\-]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).trim();
-  return {title:cleaned, type:'other'};
+  return {title, type:'other'};
 }
 
 // ══════════════ PDF RENDER ══════════════
@@ -402,7 +389,7 @@ function addStu(){
   students.push({id,name,docs:[],notes:''});
   curStu=id; hideAdd(); render(); save();
 }
-function selStu(id){curStu=id;render()}
+function selStu(id){curStu=id;document.getElementById('search-input').value='';render()}
 function showDelStu(id){
   const s=students.find(x=>x.id===id);if(!s)return;
   delStuTarget=id;
@@ -463,6 +450,95 @@ document.getElementById('file-input').addEventListener('change',async e=>{
   toast(files.length===1?'Document added':files.length+' documents added');
 });
 
+// ══════════════ SEARCH ══════════════
+let searchTimer=null;
+document.getElementById('search-input').addEventListener('input',e=>{
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>doSearch(e.target.value.trim()),300);
+});
+
+async function doSearch(query){
+  const resultsDiv=document.getElementById('search-results');
+  if(!query||query.length<2){
+    resultsDiv.classList.add('hid');
+    document.getElementById('accordion-view').classList.toggle('hid',curView!=='accordion');
+    document.getElementById('gallery-view').classList.toggle('hid',curView!=='gallery');
+    document.getElementById('no-docs').classList.toggle('hid',students.find(s=>s.id===curStu)?.docs.length>0);
+    return;
+  }
+
+  const stu=students.find(s=>s.id===curStu);
+  if(!stu||!stu.docs.length)return;
+
+  // Hide normal views, show search results
+  document.getElementById('accordion-view').classList.add('hid');
+  document.getElementById('gallery-view').classList.add('hid');
+  document.getElementById('no-docs').classList.add('hid');
+  resultsDiv.classList.remove('hid');
+
+  const qLower=query.toLowerCase();
+  let html='';
+  let totalMatches=0;
+
+  for(const doc of stu.docs){
+    // Get text to search
+    let fullText='';
+    if(doc.mode==='text'&&doc.content){
+      fullText=doc.content;
+    }else if(doc.mode==='pdf'&&doc.pdfData){
+      // Extract all text from PDF
+      if(!doc._searchText){
+        try{
+          const pdf=await pdfjsLib.getDocument({data:doc.pdfData.slice(0)}).promise;
+          const pages=[];
+          for(let i=1;i<=pdf.numPages;i++){
+            const page=await pdf.getPage(i);
+            const tc=await page.getTextContent();
+            pages.push(tc.items.map(item=>item.str).join(' '));
+          }
+          doc._searchText=pages.join('\n');
+        }catch{doc._searchText='';}
+      }
+      fullText=doc._searchText;
+    }
+
+    if(!fullText)continue;
+    const textLower=fullText.toLowerCase();
+    let idx=0;
+    const matches=[];
+    while((idx=textLower.indexOf(qLower,idx))!==-1){
+      // Get surrounding context (80 chars each side)
+      const start=Math.max(0,idx-80);
+      const end=Math.min(fullText.length,idx+query.length+80);
+      let snippet=fullText.slice(start,end);
+      // Highlight the match
+      const matchStart=idx-start;
+      const before=esc(snippet.slice(0,matchStart));
+      const match=esc(snippet.slice(matchStart,matchStart+query.length));
+      const after=esc(snippet.slice(matchStart+query.length));
+      matches.push((start>0?'...':'')+before+'<mark>'+match+'</mark>'+after+(end<fullText.length?'...':''));
+      idx+=query.length;
+      if(matches.length>=5)break; // cap at 5 per doc
+    }
+
+    if(matches.length>0){
+      totalMatches+=matches.length;
+      const dt=DT[doc.type]||DT.other;
+      html+=`<div class="search-result" onclick="document.getElementById('search-input').value='';doSearch('');openDocs['${doc.id}']=true;render()">
+        <div class="search-result-doc"><span style="color:${dt.c}">${dt.l}</span> · ${esc(doc.title)}</div>
+        ${matches.map(m=>'<div class="search-result-text">'+m+'</div>').join('')}
+      </div>`;
+    }
+  }
+
+  if(totalMatches===0){
+    html='<div class="search-info">No results found for "'+esc(query)+'" across '+stu.docs.length+' documents.</div>';
+  }else{
+    html='<div class="search-info">'+totalMatches+' match'+(totalMatches!==1?'es':'')+' for "'+esc(query)+'" across '+stu.docs.length+' documents</div>'+html;
+  }
+  resultsDiv.innerHTML=html;
+}
+
 // ══════════════ VIEW MODE ══════════════
 function setView(v){
   curView=v;
@@ -487,9 +563,11 @@ function render(){
   const galView=document.getElementById('gallery-view');
 
   if(stu.docs.length===0){
-    noDocs.classList.remove('hid');accView.classList.add('hid');galView.classList.add('hid');return;
+    noDocs.classList.remove('hid');accView.classList.add('hid');galView.classList.add('hid');
+    document.getElementById('search-results').classList.add('hid');return;
   }
   noDocs.classList.add('hid');
+  document.getElementById('search-results').classList.add('hid');
 
   if(curView==='accordion'){
     accView.classList.remove('hid');galView.classList.add('hid');
@@ -586,7 +664,7 @@ function renderGallery(stu){
     `;
     const body=document.createElement('div');body.className='gal-card-body';
     if(doc.mode==='pdf'&&doc.pdfData){
-      setTimeout(()=>renderPdf(body,doc.pdfData,1.2),0);
+      setTimeout(()=>renderPdf(body,doc.pdfData,1.6),0);
     }else if(doc.mode==='text'&&doc.content){
       const div=document.createElement('div');
       div.style.cssText='padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;background:var(--white)';
